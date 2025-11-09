@@ -1,0 +1,14 @@
+package async-dom-docs
+version    = 0.0.1
+authors    = "stefan-hoeck"
+
+depends    = base      >= 0.8.0
+           , async-dom
+           , finite
+           , tailrec
+
+sourcedir  = "src"
+
+main       = Web.Async.Example.Main
+opts       = "--codegen javascript"
+executable = "async-dom-docs.js"
