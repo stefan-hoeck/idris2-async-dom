@@ -2,3 +2,14 @@
 type   = "local"
 path   = "."
 ipkg   = "async-dom.ipkg"
+
+[custom.all.async-dom-docs]
+type   = "local"
+path   = "docs"
+ipkg   = "docs.ipkg"
+
+[custom.all.streams]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-streams"
+commit = "latest:main"
+ipkg   = "streams.ipkg"

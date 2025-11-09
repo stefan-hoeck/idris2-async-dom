@@ -28,5 +28,6 @@ modules    = Text.HTML
            , Web.Canvas.Scene
            , Web.Canvas.Shape
            , Web.Canvas.Style
+           , Web.Canvas.Transformation
 
 sourcedir  = "src"
