@@ -186,7 +186,7 @@ parameters {0 r    : Type}
   export %inline
   get : (url : String) -> (expect : Expect r) -> IO1 (IO1 ())
   get u e = request GET [] u Empty e Nothing
-  
+
   ||| Send a GET request, reading the response as plain text.
   export %inline
   getText : (url : String) -> (f : Either HTTPError String -> r) -> IO1 (IO1 ())
@@ -197,7 +197,7 @@ parameters {0 r    : Type}
   export %inline
   getJSON : FromJSON t => (url : String) -> (f : Either HTTPError t -> r) -> IO1 (IO1 ())
   getJSON u = get u . ExpectJSON
-  
+
   ||| Send a POST request.
   export %inline
   post : (url : String) -> (body : RequestBody) -> (expect : Expect r) -> IO1 (IO1 ())
