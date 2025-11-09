@@ -1,0 +1,4 @@
+[custom.all.async-dom]
+type   = "local"
+path   = "."
+ipkg   = "async-dom.ipkg"
