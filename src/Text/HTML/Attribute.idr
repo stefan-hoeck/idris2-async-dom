@@ -364,87 +364,87 @@ parameters {auto sink : Sink ev}
   export %inline
   click : (MouseInfo -> Maybe ev) -> Attribute t
   click = Event . Click
-  
+
   export %inline
   onClick : ev -> Attribute t
   onClick = click . const . Just
-  
+
   export
   onLeftClick : ev -> Attribute t
   onLeftClick va = click $ \mi => toMaybe (mi.button == 0) va
-  
+
   export
   onRightClick : ev -> Attribute t
   onRightClick va = click $ \mi => toMaybe (mi.button == 2) va
-  
+
   export
   onMiddleClick : ev -> Attribute t
   onMiddleClick va = click $ \mi => toMaybe (mi.button == 1) va
-  
+
   export %inline
   dblClick : (MouseInfo -> Maybe ev) -> Attribute t
   dblClick = Event . DblClick
-  
+
   export %inline
   onDblClick : ev -> Attribute t
   onDblClick = dblClick . const . Just
-  
+
   export %inline
   onMouseEnter : ev -> Attribute t
   onMouseEnter = Event . MouseEnter . const . Just
-  
+
   export %inline
   onMouseLeave : ev -> Attribute t
   onMouseLeave = Event . MouseLeave . const . Just
-  
+
   export %inline
   onMouseOver : ev -> Attribute t
   onMouseOver = Event . MouseOver . const . Just
-  
+
   export %inline
   onMouseOut : ev -> Attribute t
   onMouseOut = Event . MouseOut . const . Just
-  
+
   export
   onResize : (Rect -> ev) -> Attribute t
   onResize f = Event . Resize $ Just . f
-  
+
   export
   onChange : (String -> ev) -> Attribute t
   onChange f = Event . Change $ Just . f . value
-  
+
   export
   onChangeMaybe : (String -> Maybe ev) -> Attribute t
   onChangeMaybe f = Event . Change $ f . value
-  
+
   export
   onChecked : (Bool -> ev) -> Attribute t
   onChecked f = Event . Change $ Just . f . checked
-  
+
   export
   onInput : (String -> ev) -> Attribute t
   onInput f = Event . Input $ Just . f . value
-  
+
   export
   onScroll : (ScrollInfo -> ev) -> Attribute t
   onScroll f = Event . Scroll $ Just . f
-  
+
   export
   onEnterDown : ev -> Attribute t
   onEnterDown va = Event . KeyDown $ \k => toMaybe (k.key == "Enter") va
-  
+
   export
   onEscDown : ev -> Attribute t
   onEscDown va = Event . KeyDown $ \k => toMaybe (k.key == "Escape") va
-  
+
   export
   onKeyUp : (KeyInfo -> ev) -> Attribute t
   onKeyUp f = Event . KeyUp $ Just . f
-  
+
   export
   onBlur : ev -> Attribute t
   onBlur = Event . Blur
-  
+
   export
   onFocus : ev -> Attribute t
   onFocus = Event . Focus

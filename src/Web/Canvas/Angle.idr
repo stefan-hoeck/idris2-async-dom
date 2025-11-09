@@ -25,4 +25,4 @@ export
 
 export
 Show Angle where
-  show x = show x.degree 
+  show x = show x.degree
