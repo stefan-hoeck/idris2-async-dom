@@ -252,7 +252,7 @@ update (Lang x)         s = pure $ {lang := x} s
 update Check            s = pure $ checkAnswer s
 update (Inp a)          s = pure $ {answer := a} s
 update MathInit         s = do
-  (ts,pic) <- randomGame 
+  (ts,pic) <- randomGame
   pure $
     { answer := ""
     , result := Nothing
