@@ -7,11 +7,26 @@ depends    = base      >= 0.8.0
            , async-js
            , dom
            , css
+           , json-simple
+           , streams
 
 modules    = Text.HTML
            , Text.HTML.Attribute
            , Text.HTML.Event
            , Text.HTML.Node
            , Text.HTML.Select
+
+           , Web.Async.Animate
+           , Web.Async.Event
+           , Web.Async.HTTP
+           , Web.Async.Util
+           , Web.Async.View
+
+           , Web.Canvas
+           , Web.Canvas.Angle
+           , Web.Canvas.Hints
+           , Web.Canvas.Scene
+           , Web.Canvas.Shape
+           , Web.Canvas.Style
 
 sourcedir  = "src"
