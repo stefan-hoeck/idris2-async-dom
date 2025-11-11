@@ -365,6 +365,21 @@ export %hint
 signalSink : (r : SignalRef t) => Sink t
 signalSink = S (put1 r)
 
+export covering
+pullErr : AsyncStream f es Void -> Async f es ()
+pullErr s =
+  weakenErrors (pull s) >>= \case
+    Error err => fail err
+    _         => pure ()
+
+export covering %inline
+runJS : JS [JSErr] () -> IO ()
+runJS = app . handle [putStrLn . dispErr]
+
+export covering %inline
+runProg : Prog Void () -> IO ()
+runProg = runJS . pullErr
+
 export
 mvcActSignal : (evs : SignalRef e) => s -> (e -> s -> Act s) -> Prog Void ()
 mvcActSignal ini act = discrete evs |> P.evalScans1 ini (flip act) |> drain
