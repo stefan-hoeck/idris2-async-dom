@@ -45,17 +45,11 @@ prog Balls = Balls.run
 prog Req   = Request.run
 prog Math  = MathGame.run
 
-covering
-pullErr : AsyncStream f es Void -> Async f es ()
-pullErr s =
-  weakenErrors (pull s) >>= \case
-    Error err => fail err
-    _         => pure ()
-
 export covering
-ui : Async JS [JSErr] ()
-ui = do
-  style appStyle rules
-  app   <- signal Reset
-  child contentDiv (content Reset)
-  pullErr $ discrete app |> switchMap prog
+ui : IO ()
+ui =
+  runJS $ do
+    style appStyle rules
+    app   <- signal Reset
+    child contentDiv (content Reset)
+    pullErr $ discrete app |> switchMap prog
