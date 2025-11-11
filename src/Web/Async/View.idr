@@ -311,6 +311,16 @@ parameters {auto has : Has JSErr es}
   disabledM : {0 a : _} -> Ref t -> Maybe a -> JS es ()
   disabledM r = disabled r . isNothing
 
+  ||| Focus the given HTMLElemet
+  export %inline
+  focus : Ref t -> JS es ()
+  focus r = castElementByRef {t = HTMLElement} r >>= focus
+
+  ||| Blur (lose focus on) the given HTMLElemet
+  export %inline
+  blur : Ref t -> JS es ()
+  blur r = castElementByRef {t = HTMLElement} r >>= blur
+
 -- ||| Renders a scene at a canvas element
 -- export %inline
 -- renderWithMetrics : Ref Tag.Canvas -> (TextMeasure => CanvasDims -> Scene) -> JS es ()
