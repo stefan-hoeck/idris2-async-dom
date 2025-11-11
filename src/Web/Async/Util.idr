@@ -224,6 +224,12 @@ export %inline
 toClipboard : HasIO io => String -> io ()
 toClipboard s = primIO (prim__writeToClipboard s)
 
+export
+readFromClipboard : Async e es String
+readFromClipboard =
+  primAsync_ $ \cb =>
+    ffi $ prim__readFromClipboard (\s => primRun (cb $ Right s))
+
 --------------------------------------------------------------------------------
 --          Type Computations
 --------------------------------------------------------------------------------
