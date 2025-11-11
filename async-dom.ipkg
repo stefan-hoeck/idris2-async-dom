@@ -12,6 +12,7 @@ depends    = base      >= 0.8.0
 
 modules    = Text.HTML
            , Text.HTML.Attribute
+           , Text.HTML.DomID
            , Text.HTML.Event
            , Text.HTML.Node
            , Text.HTML.Select
