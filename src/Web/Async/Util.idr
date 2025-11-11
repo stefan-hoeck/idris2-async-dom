@@ -225,6 +225,10 @@ toClipboard : HasIO io => String -> io ()
 toClipboard s = primIO (prim__writeToClipboard s)
 
 export
+readFromClipboard1 : HasIO io => (String -> IO1 ()) -> io ()
+readFromClipboard1 cb = primIO $ prim__readFromClipboard (\s => primRun (cb s))
+
+export
 readFromClipboard : Async e es String
 readFromClipboard =
   primAsync_ $ \cb =>
