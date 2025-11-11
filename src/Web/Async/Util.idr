@@ -104,6 +104,12 @@ prim__focus : HTMLOrSVGElement -> PrimIO ()
 %foreign "javascript:lambda:(w) => BigInt(new Date().getTime())"
 prim__time : PrimIO Integer
 
+%foreign "browser:lambda:(s,w) => navigator.clipboard.writeText(s)"
+prim__writeToClipboard : String -> PrimIO ()
+
+%foreign "browser:lambda:(f,w) => navigator.clipboard.readText().then(s => f(s)(w))"
+prim__readFromClipboard : (String -> PrimIO ()) -> PrimIO ()
+
 --------------------------------------------------------------------------------
 --          Core Utilities
 --------------------------------------------------------------------------------
@@ -212,6 +218,11 @@ timed act = do
 export %inline
 timed' : HasIO io => io () -> io Integer
 timed' = map snd . timed
+
+||| Writes as string to the clipboard.
+export %inline
+toClipboard : HasIO io => String -> io ()
+toClipboard s = primIO (prim__writeToClipboard s)
 
 --------------------------------------------------------------------------------
 --          Type Computations
