@@ -97,7 +97,7 @@ prim__checked : HTMLInputElement -> PrimIO Bool
 %foreign "browser:lambda:(x,w)=>x.blur()"
 prim__blur : HTMLOrSVGElement -> PrimIO ()
 
-%foreign "browser:lambda:(x,w)=>x.focus(a)"
+%foreign "browser:lambda:(x,w)=>x.focus()"
 prim__focus : HTMLOrSVGElement -> PrimIO ()
 
 -- TODO: This should go to the js library
