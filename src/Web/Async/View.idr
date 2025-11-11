@@ -108,7 +108,7 @@ registerDOMEvent prev stop el de =
            when1 (bubbles e && stop) (stopPropagation e)
            let Just vt := castTo t e | Nothing => pure ()
            vb <- conv vt
-           maybe (pure ()) h.sink (f vb)
+           maybe (pure ()) h.sink1 (f vb)
 
       in addEventListener el s cb
 
@@ -116,7 +116,7 @@ registerDOMEvent prev stop el de =
     onresize f =
       let Just va := castTo Element el | Nothing => pure ()
        in ffi $ prim__observeResize va $ \r => primRun $
-            toRect r >>= maybe (pure ()) h.sink . f
+            toRect r >>= maybe (pure ()) h.sink1 . f
 
 export
 setAttribute : Element -> Attribute t -> IO1 ()

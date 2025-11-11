@@ -26,7 +26,7 @@ prim__clearInterval : IntervalID -> PrimIO ()
 export
 every : (s : Sink e) => e -> (n : Bits32) -> IO1 (IO1 ())
 every ev millis t =
-  let i # t := ffi (prim__setInterval millis (primRun $ s.sink ev)) t
+  let i # t := ffi (prim__setInterval millis (primRun $ s.sink1 ev)) t
    in ffi (prim__clearInterval i) # t
 
 --------------------------------------------------------------------------------
@@ -67,5 +67,5 @@ export
 animate : (s : Sink e) => (DTime -> e) -> IO1 (IO1 ())
 animate ev = T1.do
   ref <- ref1 true
-  ffi (prim__animate (primRun $ read1 ref) (primRun . s.sink . ev))
+  ffi (prim__animate (primRun $ read1 ref) (primRun . s.sink1 . ev))
   pure $ write1 ref false
