@@ -119,18 +119,18 @@ parameters {0 r    : Type}
            {auto s : Sink r}
 
   onerror : Expect r -> HTTPError -> Event -> IO1 ()
-  onerror (ExpectJSON f)   err _ = s.sink (f $ Left err)
-  onerror (ExpectString f) err _ = s.sink (f $ Left err)
-  onerror (ExpectAny f)    err _ = s.sink (f $ Left err)
+  onerror (ExpectJSON f)   err _ = s.sink1 (f $ Left err)
+  onerror (ExpectString f) err _ = s.sink1 (f $ Left err)
+  onerror (ExpectAny f)    err _ = s.sink1 (f $ Left err)
 
   onsuccess : Expect r -> XMLHttpRequest -> Event -> IO1 ()
   onsuccess (ExpectString f)   x _ = T1.do
     txt <- ffi (prim__responseText x)
-    s.sink (f $ Right txt)
-  onsuccess (ExpectAny f)      x _ = s.sink (f $ Right ())
+    s.sink1 (f $ Right txt)
+  onsuccess (ExpectAny f)      x _ = s.sink1 (f $ Right ())
   onsuccess (ExpectJSON {a} f) x _ = T1.do
     txt <- ffi (prim__responseText x)
-    s.sink (f $ mapFst (JSONError txt) $ decode txt)
+    s.sink1 (f $ mapFst (JSONError txt) $ decode txt)
 
   onload : Expect r -> XMLHttpRequest -> Event -> IO1 ()
   onload exp x ev = T1.do
