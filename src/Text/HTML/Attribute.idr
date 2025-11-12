@@ -1,5 +1,6 @@
 module Text.HTML.Attribute
 
+import Derive.Prelude
 import Data.Linear.Token
 import Data.List
 import Data.Maybe
@@ -9,6 +10,7 @@ import Text.HTML.Ref
 import Text.HTML.Tag
 
 %default total
+%language ElabReflection
 
 --------------------------------------------------------------------------------
 -- Sink
@@ -94,6 +96,18 @@ Show InputType where
   show Time     = "time"
   show URL      = "url"
   show Week     = "week"
+
+||| A CSS class
+public export
+record Class where
+  constructor C
+  value : String
+
+%runElab derive "Class" [Show,Eq,Ord,FromString]
+
+public export
+0 Classes : Type
+Classes = List Class
 
 ||| An attribute indexed by the `HTMLTag` used for the element
 ||| in question.
@@ -184,12 +198,12 @@ cite : String -> Attribute t
 cite = Str "cite"
 
 export %inline
-class : String -> Attribute t
-class = Str "class"
+class : Class -> Attribute t
+class = Str "class" . value
 
 export %inline
-classes : List String -> Attribute t
-classes = dispAttr "class" (fastConcat . intersperse " ")
+classes : Classes -> Attribute t
+classes = dispAttr "class" (fastConcat . intersperse " " . map value)
 
 export %inline
 cols : Bits32 -> Attribute t
