@@ -50,20 +50,20 @@ calc = Id "mathgame_calc"
 
 ||| Message field class if answer is correct
 export
-correct : String
+correct : Class
 correct = "correct"
 
 ||| Message field class if answer is wrong
 export
-wrong : String
+wrong : Class
 wrong = "wrong"
 
 export
-mathContent : String
+mathContent : Class
 mathContent = "mathgame_content"
 
 export
-lblLang : String
+lblLang : Class
 lblLang = "mathgame_lbllang"
 
 data Tag = LLan | ILan | OClc | IRes | BChk | ORep | BNew | OPic | Dot
@@ -83,7 +83,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ class mathContent
+      [ cssClass mathContent
           [ Display           $ Area
               (replicate 6 MinContent)
               [MaxContent, MaxContent]
@@ -102,7 +102,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class mathContent
+      [ class mathContent.value
           [ Display           $ Area
               (replicate 6 MinContent)
               [MaxContent, MaxContent, fr 1]
@@ -120,7 +120,7 @@ css =
           ]
       ]
 
-  , class lblLang [ gridArea LLan ]
+  , cssClass lblLang [ gridArea LLan ]
 
   , ref langIn
       [ gridArea        ILan
@@ -158,7 +158,7 @@ css =
       , width           $ px 500
       ]
 
-  , class correct [ color green ]
+  , cssClass correct [ color green ]
 
-  , class wrong [ color red ]
+  , cssClass wrong [ color red ]
   ]

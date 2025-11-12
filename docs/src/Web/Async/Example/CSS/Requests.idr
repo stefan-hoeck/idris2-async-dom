@@ -22,15 +22,15 @@ quoteInfo = Id "request-quote-info"
 --------------------------------------------------------------------------------
 
 export
-requestContent : String
+requestContent : Class
 requestContent = "request-content"
 
 export
-requestError : String
+requestError : Class
 requestError = "request-error"
 
 export
-quoteBtn : String
+quoteBtn : Class
 quoteBtn = "request-quote-btn"
 
 --------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ class requestContent
+      [ cssClass requestContent
           [ Display             $ Area
               [MinContent, MaxContent, MaxContent]
               [px 200, px 400]
@@ -67,5 +67,5 @@ css =
 
   , ref quoteInfo [gridArea Info, textAlign End]
 
-  , class quoteBtn [gridArea Btn]
+  , cssClass quoteBtn [gridArea Btn]
   ]

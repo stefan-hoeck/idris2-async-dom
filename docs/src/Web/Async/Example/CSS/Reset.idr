@@ -33,27 +33,27 @@ btnReset = Id "reset_reset"
 --------------------------------------------------------------------------------
 
 export
-resetLbl : String
+resetLbl : Class
 resetLbl = "reset_resetlbl"
 
 export
-incLbl : String
+incLbl : Class
 incLbl = "reset_inclbl"
 
 export
-decLbl : String
+decLbl : Class
 decLbl = "reset_declbl"
 
 export
-countLbl : String
+countLbl : Class
 countLbl = "reset_countlbl"
 
 export
-resetContent : String
+resetContent : Class
 resetContent = "reset_content"
 
 export
-resetBtn : String
+resetBtn : Class
 resetBtn = "reset_incbtn"
 
 data Tag = LRes | BRes | LInc | BInc | LDec | BDec | LCnt | OCnt
@@ -71,7 +71,7 @@ AreaTag Tag where
 export
 css : List (Rule 1)
 css =
-  [ class resetContent
+  [ cssClass resetContent
       [ Display             $ Area
           (replicate 4 MinContent)
           [MaxContent, MaxContent]
@@ -86,19 +86,19 @@ css =
       , padding             $ VH (px 20) (px 10)
       ]
 
-  , class resetLbl  [ gridArea LRes ]
+  , cssClass resetLbl  [ gridArea LRes ]
 
   , ref btnReset  [ gridArea BRes ]
 
-  , class incLbl    [ gridArea LInc ]
+  , cssClass incLbl    [ gridArea LInc ]
 
   , ref btnInc    [ gridArea BInc ]
 
-  , class decLbl    [ gridArea LDec ]
+  , cssClass decLbl    [ gridArea LDec ]
 
   , ref btnDec    [ gridArea BDec ]
 
-  , class countLbl  [ gridArea LCnt ]
+  , cssClass countLbl  [ gridArea LCnt ]
 
   , ref out
       [ fontSize        Large

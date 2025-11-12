@@ -2,6 +2,7 @@ module Web.Async.Example.CSS.Core
 
 import public Web.Async.Example.CSS.Colors
 import public Text.CSS
+import public Text.HTML.Attribute
 import public Text.HTML.Ref
 import public Text.HTML.Tag
 
@@ -38,57 +39,61 @@ appStyle = Id "appstyle"
 
 ||| a clickable button
 export
-btn : String
+btn : Class
 btn = "btn"
 
 ||| a text input
 export
-textIn : String
+textIn : Class
 textIn = "textin"
 
 ||| a select input
 export
-selectIn : String
+selectIn : Class
 selectIn = "selectin"
 
 ||| an input widget
 export
-widget : String
+widget : Class
 widget = "widget"
 
 ||| the main content, split into three rows:
 ||| a title, the example selector, and the
 ||| currently loaded example application
 export
-contentList : String
+contentList : Class
 contentList = "contentList"
 
 ||| the header row where the example selector
 ||| resides
 export
-contentHeader : String
+contentHeader : Class
 contentHeader = "contentHeader"
 
 ||| the row with the page title
 export
-pageTitle : String
+pageTitle : Class
 pageTitle = "pageTitle"
 
 ||| the select box used to choose an example
 ||| application
 export
-exampleSelector : String
+exampleSelector : Class
 exampleSelector = "example_selector"
 
 ||| a label on the left of an input
 ||| widget.
 export
-widgetLabel : String
+widgetLabel : Class
 widgetLabel = "widgetlabel"
 
 --------------------------------------------------------------------------------
 --          Rules
 --------------------------------------------------------------------------------
+
+export %inline
+cssClass : Class -> List Declaration -> Rule n
+cssClass s = sel (class s.value)
 
 export
 coreCSS : List (Rule 1)
@@ -106,7 +111,7 @@ coreCSS =
       , margin          $ px 0
       ]
 
-  , class contentList
+  , cssClass contentList
       [ alignSelf        Center
       , backgroundColor  darker_grey
       , display          Flex
@@ -117,7 +122,7 @@ coreCSS =
       , minWidth         $ perc 80
       ]
 
-  , class pageTitle
+  , cssClass pageTitle
       [ borderStyle      $ Bottom Solid
       , borderWidth      $ Bottom (px 5)
       , borderColor      $ Bottom base80
@@ -126,7 +131,7 @@ coreCSS =
       , textAlign        Center
       ]
 
-  , class contentHeader
+  , cssClass contentHeader
       [ display              Grid
       , columnGap            $ px 10
       , gridTemplateColumns  [px 170, fr 1, fr 3]
@@ -136,7 +141,7 @@ coreCSS =
       , padding              $ VH (px 30) (px 10)
       ]
 
-  , class widget
+  , cssClass widget
       [ backgroundColor lighter_grey
       , borderRadius    $ px 8
       , borderStyle     $ All Solid
@@ -147,39 +152,39 @@ coreCSS =
       , padding         $ px 3
       ]
 
-  , sel [class widget, Hover]
+  , sel [class widget.value, Hover]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget, Active]
+  , sel [class widget.value, Active]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget, FocusVisible]
+  , sel [class widget.value, FocusVisible]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget, Disabled]
+  , sel [class widget.value, Disabled]
       [ backgroundColor light_grey
       , borderColor     $ All dark_grey
       ]
 
-  , class textIn
+  , cssClass textIn
       [ textAlign       End ]
 
-  , class selectIn
+  , cssClass selectIn
       [ textAlign       End ]
 
-  , class exampleSelector
+  , cssClass exampleSelector
       [ fontSize        Large
       , gridColumn      $ At 2
       ]
 
-  , sel [class widget, Invalid]
+  , sel [class widget.value, Invalid]
       [ borderColor     $ All red ]
 
-  , class widgetLabel [ fontSize Large ]
+  , cssClass widgetLabel [ fontSize Large ]
   ]
