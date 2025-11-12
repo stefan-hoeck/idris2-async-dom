@@ -36,23 +36,23 @@ time = Id "performance_time"
 --------------------------------------------------------------------------------
 
 export
-inc : String
+inc : Class
 inc = "performance_inc"
 
 export
-numButtonsLbl : String
+numButtonsLbl : Class
 numButtonsLbl = "performance_numbuttonslbl"
 
 export
-sumLbl : String
+sumLbl : Class
 sumLbl = "performance_sumlbl"
 
 export
-grid : String
+grid : Class
 grid = "performance_grid"
 
 export
-performanceContent : String
+performanceContent : Class
 performanceContent = "performance_content"
 
 --------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ class performanceContent
+      [ cssClass performanceContent
           [ Display             $ Area
               (replicate 4 MinContent)
               [MaxContent, fr 1, MaxContent]
@@ -91,7 +91,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class performanceContent
+      [ class performanceContent.value
           [ Display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent, MaxContent, fr 1]
@@ -106,7 +106,7 @@ css =
           ]
       ]
 
-  , class numButtonsLbl [ gridArea LBtn ]
+  , cssClass numButtonsLbl [ gridArea LBtn ]
 
   , ref natIn
       [ gridArea        NBtn
@@ -115,7 +115,7 @@ css =
 
   , ref btnRun [ gridArea BRun ]
 
-  , class sumLbl [ gridArea LSum ]
+  , cssClass sumLbl [ gridArea LSum ]
 
   , ref out
       [ gridArea        OSum
@@ -132,12 +132,12 @@ css =
       , padding         $ Left (px 10)
       ]
 
-  , class grid
+  , cssClass grid
       [ display         Flex
       , flexWrap        "wrap"
       ]
 
-  , class inc
+  , cssClass inc
       [ flexBasis       $ perc 5
       , fontSize        XXSmall
       ]

@@ -28,11 +28,11 @@ log = Id "balls_log"
 --------------------------------------------------------------------------------
 
 export
-ballsContent : String
+ballsContent : Class
 ballsContent = "balls_content"
 
 export
-lblCount : String
+lblCount : Class
 lblCount = "balls_lblcount"
 
 data Tag = LNum | INum | BRun | LFPS | Anim | Dot
@@ -49,7 +49,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ class ballsContent
+      [ cssClass ballsContent
           [ display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent]
@@ -66,7 +66,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class ballsContent
+      [ class ballsContent.value
           [ display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent, fr 1]
@@ -82,7 +82,7 @@ css =
           ]
       ]
 
-  , class lblCount [ gridArea LNum ]
+  , cssClass lblCount [ gridArea LNum ]
 
   , ref txtCount
       [ gridArea        INum
