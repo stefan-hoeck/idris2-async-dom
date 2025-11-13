@@ -27,6 +27,17 @@ export %inline
 FromString HTMLNode where
   fromString = Text
 
+||| True if the given node is the empty node
+export %inline
+isEmpty : HTMLNode -> Bool
+isEmpty Empty = True
+isEmpty _     = False
+
+||| True if the given node is not the empty node
+export %inline
+nonEmpty : HTMLNode -> Bool
+nonEmpty = not . isEmpty
+
 ||| An optional node that is set to `Empty` if the given `Bool` is `False`.
 export
 nodeIf : Bool -> Lazy HTMLNode -> HTMLNode
