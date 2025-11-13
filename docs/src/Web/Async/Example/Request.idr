@@ -51,7 +51,7 @@ dispResult (Right q) =
   ]
 
 export
-run : Prog Void ()
+run : JSStream Void
 run =
   mvcAct ReqInit () $ \e,_ => case e of
     ReqInit  => child exampleDiv content

@@ -262,7 +262,7 @@ update MathInit         s = do
     } s
 
 export
-run : Prog Void ()
+run : JSStream Void
 run =
   mvcAct MathInit MathGame.init $ \e,s => Prelude.do
     s2 <- update e s

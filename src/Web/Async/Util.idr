@@ -358,8 +358,12 @@ public export
 Act = Async JS [JSErr]
 
 public export
-0 Prog : Type -> Type -> Type
-Prog o r = Pull (Async JS) o [JSErr] r
+0 JSPull : Type -> Type -> Type
+JSPull o r = Pull (Async JS) o [JSErr] r
+
+public export
+0 JSStream : Type -> Type
+JSStream o = Pull (Async JS) o [JSErr] ()
 
 export %hint
 signalSink : (r : SignalRef t) => Sink t
@@ -377,23 +381,23 @@ runJS : JS [JSErr] () -> IO ()
 runJS = app . handle [putStrLn . dispErr]
 
 export covering %inline
-runProg : Prog Void () -> IO ()
+runProg : JSStream Void -> IO ()
 runProg = runJS . pullErr
 
 export
-mvcActSignal : (evs : SignalRef e) => s -> (e -> s -> Act s) -> Prog Void ()
+mvcActSignal : (evs : SignalRef e) => s -> (e -> s -> Act s) -> JSStream Void
 mvcActSignal ini act = discrete evs |> P.evalScans1 ini (flip act) |> drain
 
 parameters (ev  : e)
            (ini : s)
 
   export
-  mvcAct : (Sink e => e -> s -> Act s) -> Prog Void ()
+  mvcAct : (Sink e => e -> s -> Act s) -> JSStream Void
   mvcAct act = do
     evs <- signal ev
     mvcActSignal @{evs} ini act
 
   export
-  mvc : (e -> s -> s) -> (Sink e => e -> s -> Act ()) -> Prog Void ()
+  mvc : (e -> s -> s) -> (Sink e => e -> s -> Act ()) -> JSStream Void
   mvc upd disp =
     mvcAct (\v,x => let y := upd v x in disp v y $> y)
