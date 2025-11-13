@@ -38,7 +38,7 @@ content ini =
       , div [Id exampleDiv] []
       ]
 
-prog : App -> Prog Void ()
+prog : App -> JSStream Void
 prog Reset = Reset.run
 prog Perf  = Performance.run
 prog Balls = Balls.run

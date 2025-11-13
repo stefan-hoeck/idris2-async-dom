@@ -88,7 +88,7 @@ dispTime 1 ms = "\Loaded one button in \{show ms} ms."
 dispTime n ms = "\Loaded \{show n.value} buttons in \{show ms} ms."
 
 export
-run : Prog Void ()
+run : JSStream Void
 run =
   mvcAct PerfInit init $ \e,s => do
     case e of

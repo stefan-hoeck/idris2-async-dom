@@ -1,8 +1,7 @@
 ||| Reocurring fragments from the example applications
 module Web.Async.Example.Util
 
-import public Web.Async.Util
-import public Web.Async.View
+import public Web.Async
 import Web.Async.Example.CSS.Core
 
 %default total

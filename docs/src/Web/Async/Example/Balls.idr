@@ -212,7 +212,7 @@ next m s =
     S k => { balls $= map (nextBall m), dtime $= (+m), count := k } s
 
 export
-run : Prog Void ()
+run : JSStream Void
 run = do
   s <- signal (Next 0)
   exec $ child exampleDiv content

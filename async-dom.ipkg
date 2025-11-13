@@ -17,6 +17,7 @@ modules    = Text.HTML
            , Text.HTML.Node
            , Text.HTML.Select
 
+           , Web.Async
            , Web.Async.Animate
            , Web.Async.Event
            , Web.Async.HTTP

@@ -40,5 +40,5 @@ parameters {auto ev  : Sink ResetEv}
   display (Mod f)   n = displayST n
 
 export
-run : Prog Void ()
+run : JSStream Void
 run = mvc ResetInit 0 update display
