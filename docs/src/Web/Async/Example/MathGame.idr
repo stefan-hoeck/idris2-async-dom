@@ -166,7 +166,7 @@ content l =
         , onInput Inp
         , class widget
         , placeholder (resultStr l)
-        ] []
+        ]
 
     , button
         [ Id checkBtn
