@@ -151,7 +151,7 @@ content =
         , onEnterDown Run
         , class widget
         , placeholder "Range: [\{show MinBalls}, \{show MaxBalls}]"
-        ] []
+        ]
     , button [Id btnRun, onClick Run, disabled True, classes [widget,btn]] ["Run"]
     , div [Id log] []
     , canvas [Id out, width wcanvas, height wcanvas] []

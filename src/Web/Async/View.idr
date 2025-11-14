@@ -139,6 +139,10 @@ addNode p (El {tag} _ xs ys) t =
      _ # t := ffi (prim__append p (up n)) t
      _ # t := addNodes (up n) ys t
   in traverse1_ (setAttribute n) xs t
+addNode p (EEl {tag} _ xs) t =
+ let n # t := ffi (prim__createElement tag) t
+     _ # t := ffi (prim__append p (up n)) t
+  in traverse1_ (setAttribute n) xs t
 
 addNode p (Raw s) t =
  let el # t := ffi (prim__createElement "template") t

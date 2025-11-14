@@ -69,7 +69,7 @@ parameters {auto ev : Sink PerfEv}
           , onEnterDown Reload
           , classes [widget, textIn]
           , placeholder "Enter a positive integer"
-          ] []
+          ]
       , button [Id btnRun, onClick Reload, classes [widget, btn]] ["Run"]
       , lbl "Sum:" sumLbl
       , div [Id out] []
