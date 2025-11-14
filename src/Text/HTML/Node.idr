@@ -17,6 +17,12 @@ data HTMLNode : Type where
         -> List HTMLNode
         -> HTMLNode
 
+  ||| Data constructor for empty elements
+  EEl   :  {tag   : String}
+        -> (0 tpe : HTMLTag tag)
+        -> List (Attribute tpe)
+        -> HTMLNode
+
   Raw   : String -> HTMLNode
 
   Text  : String -> HTMLNode
@@ -60,8 +66,8 @@ address : List (Attribute Address) -> List HTMLNode -> HTMLNode
 address = El _
 
 export %inline
-area : List (Attribute Area) -> List HTMLNode -> HTMLNode
-area = El _
+area : List (Attribute Area) -> HTMLNode
+area = EEl _
 
 export %inline
 article : List (Attribute Article) -> List HTMLNode -> HTMLNode
@@ -76,8 +82,8 @@ audio : List (Attribute Audio) -> List HTMLNode -> HTMLNode
 audio = El _
 
 export %inline
-base : List (Attribute Base) -> List HTMLNode -> HTMLNode
-base = El _
+base : List (Attribute Base) -> HTMLNode
+base = EEl _
 
 export %inline
 blockquote : List (Attribute Blockquote) -> List HTMLNode -> HTMLNode
@@ -88,8 +94,8 @@ body : List (Attribute Tag.Body) -> List HTMLNode -> HTMLNode
 body = El _
 
 export %inline
-br : List (Attribute Br) -> List HTMLNode -> HTMLNode
-br = El _
+br : List (Attribute Br) -> HTMLNode
+br = EEl _
 
 export %inline
 button : List (Attribute Tag.Button) -> List HTMLNode -> HTMLNode
@@ -104,8 +110,8 @@ caption : List (Attribute Caption) -> List HTMLNode -> HTMLNode
 caption = El _
 
 export %inline
-col : List (Attribute Col) -> List HTMLNode -> HTMLNode
-col = El _
+col : List (Attribute Col) -> HTMLNode
+col = EEl _
 
 export %inline
 colgroup : List (Attribute Colgroup) -> List HTMLNode -> HTMLNode
@@ -140,8 +146,8 @@ dl : List (Attribute Dl) -> List HTMLNode -> HTMLNode
 dl = El _
 
 export %inline
-embed : List (Attribute Embed) -> List HTMLNode -> HTMLNode
-embed = El _
+embed : List (Attribute Embed) -> HTMLNode
+embed as = El _ as []
 
 export %inline
 fieldset : List (Attribute FieldSet) -> List HTMLNode -> HTMLNode
@@ -184,8 +190,8 @@ header : List (Attribute Header) -> List HTMLNode -> HTMLNode
 header = El _
 
 export %inline
-hr : List (Attribute HR) -> List HTMLNode -> HTMLNode
-hr = El _
+hr : List (Attribute HR) -> HTMLNode
+hr = EEl _
 
 export %inline
 html : List (Attribute Html) -> List HTMLNode -> HTMLNode
@@ -196,12 +202,12 @@ iframe : List (Attribute IFrame) -> List HTMLNode -> HTMLNode
 iframe = El _
 
 export %inline
-img : List (Attribute Img) -> List HTMLNode -> HTMLNode
-img = El _
+img : List (Attribute Img) -> HTMLNode
+img = EEl _
 
 export %inline
-input : List (Attribute Tag.Input) -> List HTMLNode -> HTMLNode
-input = El _
+input : List (Attribute Tag.Input) -> HTMLNode
+input = EEl _
 
 export %inline
 ins : List (Attribute Ins) -> List HTMLNode -> HTMLNode
@@ -220,8 +226,8 @@ li : List (Attribute Li) -> List HTMLNode -> HTMLNode
 li = El _
 
 export %inline
-link : List (Attribute Link) -> List HTMLNode -> HTMLNode
-link = El _
+link : List (Attribute Link) -> HTMLNode
+link = EEl _
 
 export %inline
 map : List (Attribute Tag.Map) -> List HTMLNode -> HTMLNode
@@ -232,8 +238,8 @@ menu : List (Attribute Menu) -> List HTMLNode -> HTMLNode
 menu = El _
 
 export %inline
-meta : List (Attribute Meta) -> List HTMLNode -> HTMLNode
-meta = El _
+meta : List (Attribute Meta) -> HTMLNode
+meta = EEl _
 
 export %inline
 meter : List (Attribute Meter) -> List HTMLNode -> HTMLNode
@@ -264,8 +270,8 @@ p : List (Attribute P) -> List HTMLNode -> HTMLNode
 p = El _
 
 export %inline
-param : List (Attribute Param) -> List HTMLNode -> HTMLNode
-param = El _
+param : List (Attribute Param) -> HTMLNode
+param = EEl _
 
 export %inline
 picture : List (Attribute Picture) -> List HTMLNode -> HTMLNode
@@ -300,8 +306,8 @@ slot : List (Attribute Slot) -> List HTMLNode -> HTMLNode
 slot = El _
 
 export %inline
-source : List (Attribute Source) -> List HTMLNode -> HTMLNode
-source = El _
+source : List (Attribute Source) -> HTMLNode
+source as = El _ as []
 
 export %inline
 span : List (Attribute Span) -> List HTMLNode -> HTMLNode
@@ -356,8 +362,8 @@ tr : List (Attribute Tr) -> List HTMLNode -> HTMLNode
 tr = El _
 
 export %inline
-track : List (Attribute Track) -> List HTMLNode -> HTMLNode
-track = El _
+track : List (Attribute Track) -> HTMLNode
+track = EEl _
 
 export %inline
 ul : List (Attribute Ul) -> List HTMLNode -> HTMLNode
@@ -395,7 +401,8 @@ render : HTMLNode -> String
 render n = case n of
   Raw x             => x
   Text x            => escape x
-  El {tag} _ as ns  => "<\{tag}\{attrs as}>\{go [<] ns}</\{tag}>"
+  EEl {tag} _ as    => "<\{tag}\{attrs as}>"
+  El  {tag} _ as ns => "<\{tag}\{attrs as}>\{go [<] ns}</\{tag}>"
   Empty             => ""
 
   where
