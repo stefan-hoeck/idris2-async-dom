@@ -8,6 +8,12 @@ type   = "local"
 path   = "docs"
 ipkg   = "docs.ipkg"
 
+[custom.all.bytestring]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-bytestring"
+commit = "latest:main"
+ipkg   = "bytestring.ipkg"
+
 [custom.all.streams]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-streams"
