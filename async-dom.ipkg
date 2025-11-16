@@ -22,6 +22,7 @@ modules    = Text.HTML
            , Web.Async
            , Web.Async.Animate
            , Web.Async.Event
+           , Web.Async.Form
            , Web.Async.HTTP
            , Web.Async.Util
            , Web.Async.View
