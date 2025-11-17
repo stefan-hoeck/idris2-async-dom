@@ -106,7 +106,7 @@ Functor Widget where
 ||| This is useful for disabling components such as buttons
 ||| in the UI in case of invalid user input.
 export %inline
-disabledEdit : Has JSErr es => Ref t -> EditRes t -> JS es ()
+disabledEdit : {0 a : _} -> Has JSErr es => Ref t -> EditRes a -> JS es ()
 disabledEdit r = disabled r . not . isValid
 
 --------------------------------------------------------------------------------
