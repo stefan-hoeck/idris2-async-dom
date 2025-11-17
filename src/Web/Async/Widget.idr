@@ -33,6 +33,11 @@ toEither (Invalid s) = Left s
 toEither _           = Right ()
 
 export
+isValid : EditRes t -> Bool
+isValid (Valid _) = True
+isValid _         = False
+
+export
 Functor EditRes where
   map f Missing     = Missing
   map f (Invalid v) = Invalid v
@@ -94,6 +99,15 @@ once = W Empty . emit
 export
 Functor Widget where
   map f (W n p) = W n $ mapOutput f p
+
+||| Sets the `disabled` attribute of the given element
+||| if the given values is not a `Valid`.
+|||
+||| This is useful for disabling components such as buttons
+||| in the UI in case of invalid user input.
+export %inline
+disabledEdit : Has JSErr es => Ref t -> EditRes t -> JS es ()
+disabledEdit r = disabled r . not . isValid
 
 --------------------------------------------------------------------------------
 -- Text Widgets
