@@ -21,6 +21,7 @@ modules    = Text.HTML
 
            , Web.Async
            , Web.Async.Animate
+           , Web.Async.Confirm
            , Web.Async.Event
            , Web.Async.Form
            , Web.Async.HTTP
