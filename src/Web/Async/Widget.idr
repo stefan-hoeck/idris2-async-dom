@@ -218,6 +218,10 @@ export
 editP : Prism' t2 t1 -> Editor t1 -> Editor t2
 editP p (E f) = E $ map3 p.reverseGet . f . (>>= first p)
 
+export %inline
+mapEvents : (JSStream (EditRes t) -> JSStream (EditRes t)) -> Editor t -> Editor t
+mapEvents f (E w) = E $ map {events $= f} . w
+
 ||| A dummy `Editor` for uneditable values.
 |||
 ||| The given value is fired exactly once.
