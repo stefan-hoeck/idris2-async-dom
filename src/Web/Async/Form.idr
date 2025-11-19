@@ -5,6 +5,7 @@ import public Data.Singleton
 import public Monocle
 import public Web.Async
 import public Web.Async.Widget
+import Text.HTML.DomID
 
 %default total
 
