@@ -55,21 +55,6 @@ Applicative EditRes where
 -- Widgets
 --------------------------------------------------------------------------------
 
-attrID : List (Attribute t) -> Maybe (Ref t)
-attrID []           = Nothing
-attrID (Id r :: _)  = Just r
-attrID (_    :: xs) = attrID xs
-
-||| Generates a unique ID to be used to identify a DOM element.
-export
-uniqueID : LIO io => io DomID
-uniqueID = map (D . ("uid" ++) . show) token
-
-||| Uses `uniqueID` to generate a reference for a DOM element.
-export
-uniqueRef : {s : _} -> LIO io => (0 t : HTMLTag s) -> io (Ref t)
-uniqueRef tag = tagRef tag <$> uniqueID
-
 ||| A `Widget e` is an interactive UI element that emits
 ||| events of type `e`.
 public export
