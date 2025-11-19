@@ -17,7 +17,7 @@ confirm Cancel y = Valid Nothing
 confirm OK     y = map Just y
 
 confirmStream :
-     Ref Tag.Button
+     Ref Void
   -> JSStream ConfirmEv
   -> JSStream (EditRes e)
   -> JSStream (EditRes $ Maybe e)
@@ -38,7 +38,7 @@ confirmStream ref cs es =
 ||| at most.
 export
 confirmed :
-     (wrap : HTMLNode -> Act (Ref Tag.Button, Widget ConfirmEv))
+     (wrap : HTMLNode -> Act (Ref Void, Widget ConfirmEv))
   -> Editor e
   -> Editor (Maybe e)
 confirmed wrap (E f) =
@@ -51,7 +51,7 @@ confirmed wrap (E f) =
 ||| event.
 export
 confirmed1 :
-     (wrap : HTMLNode -> Act (Ref Tag.Button, Widget ConfirmEv))
+     (wrap : HTMLNode -> Act (Ref Void, Widget ConfirmEv))
   -> Editor e
   -> Editor (Maybe e)
 confirmed1 wrap = mapEvents (take 1) . confirmed wrap
