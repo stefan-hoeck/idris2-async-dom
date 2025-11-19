@@ -98,20 +98,51 @@ disabledEdit r = disabled r . not . isValid
 -- Text Widgets
 --------------------------------------------------------------------------------
 
+export
+voidRef : Ref t -> Ref Void
+voidRef (Id id)  = Elem id
+voidRef (Elem s) = Elem s
+voidRef Body     = Body
+voidRef Document = Document
+voidRef Window   = Window
+
+||| Adds a unique ID to the given list of attributes if it does not yet
+||| already have an ID attribute, andreturns the updated list plus the ID.
+export
+attributesWithID :
+     {auto lio : LIO io}
+  -> {s   : _}
+  -> (0 t : HTMLTag s)
+  -> List (Attribute t)
+  -> io (Ref t, List (Attribute t))
+attributesWithID t attrs =
+  case attrID attrs of
+    Nothing => map (\i => (tagRef t i, ref i :: attrs)) uniqueID
+    Just x  => pure (x, attrs)
+
+||| Adds a unique ID to the given HTML node if it does not yet
+||| already have an ID and returns the updated node plus its ID.
+|||
+||| Returns `Nothing` in case the node in question is a `Raw` node
+||| or a `Text` node.
+export
+nodeWithID : LIO io => HTMLNode -> io (Maybe (Ref Void, HTMLNode))
+nodeWithID (El t x y) =
+  (\(i,a) => Just (voidRef i,El t a y)) <$> attributesWithID t x
+nodeWithID (EEl t x)  =
+  (\(i,a) => Just (voidRef i,EEl t a)) <$> attributesWithID t x
+nodeWithID (Raw _)    = pure Nothing
+nodeWithID (Text _)   = pure Nothing
+nodeWithID Empty = ?nodeWithID_rhs_4
+
 parameters {auto lio : LIO io}
            (tpe      : InputType)
            (attrs    : List (Attribute Tag.Input))
 
-  withID : io (Ref Tag.Input, List (Attribute Tag.Input))
-  withID =
-    case attrID attrs of
-      Nothing => map (\i => (tagRef _ i, ref i :: attrs)) uniqueID
-      Just x  => pure (x, attrs)
-
   textInP : String -> io (Ref Tag.Input, Widget String)
   textInP v = do
     s      <- signal v
-    (i,as) <- withID
+    (i,as) <- attributesWithID Tag.Input attrs
     pure
       ( i
       , W (input $ [value v, type tpe, onInput Prelude.id] ++ as) (discrete s)
