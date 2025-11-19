@@ -126,6 +126,13 @@ data Attribute : {0 k : Type} -> (t : k) -> Type where
     -> Attribute t
   Empty  : Attribute t
 
+||| Tries to extract the ID from a list of attributes
+export
+attrID : List (Attribute t) -> Maybe (Ref t)
+attrID []           = Nothing
+attrID (Id r :: _)  = Just r
+attrID (_    :: xs) = attrID xs
+
 ||| Optional attribute that is set to `Empty` if the given `Bool` is `False`
 export
 attrIf : Bool -> Lazy (Attribute t) -> Attribute t

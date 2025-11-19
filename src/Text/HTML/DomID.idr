@@ -1,5 +1,6 @@
 module Text.HTML.DomID
 
+import Data.Linear.Unique
 import Data.List.Quantifiers
 import Derive.Prelude
 import Text.HTML
@@ -99,3 +100,13 @@ canvasRef = tagRef _
 export %inline
 ref : {s : _} -> {0 tag : HTMLTag s} -> Cast t DomID => t -> Attribute tag
 ref = Id . tagRef tag
+
+||| Generates a unique ID to be used to identify a DOM element.
+export
+uniqueID : LIO io => io DomID
+uniqueID = map (D . ("uid" ++) . show) token
+
+||| Uses `uniqueID` to generate a reference for a DOM element.
+export
+uniqueRef : {s : _} -> LIO io => (0 t : HTMLTag s) -> io (Ref t)
+uniqueRef tag = tagRef tag <$> uniqueID
