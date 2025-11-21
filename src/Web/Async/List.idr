@@ -95,7 +95,7 @@ parameters (parent : Act (Ref Void, List HTMLNode -> Widget ListEv))
     E $ \m => do
       (ref, makeW) <- parent
       ini          <- lift1 $ initial m
-      rows         <- traverseList (\(t,v) => rw t (Just v)) ini
+      rows         <- traverseList [<] (\(t,v) => rw t (Just v)) ini
       let W n listEvs := makeW (map node rows)
       pure $ W n $
         (emits (map events rows) <+> evalMap (add ref) listEvs)
