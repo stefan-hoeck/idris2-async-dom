@@ -24,8 +24,7 @@ toField (nm, W Empty _, _) = Nothing
 toField (nm, W n _, r)     = Just (FF nm n r)
 
 formStream : List (String, Widget (t -> t),Ref Label) -> t -> JSStream t
-formStream ps ini =
-  merge (map (events . fst . snd) ps) |> scans1 ini (\x,f => f x)
+formStream ps ini = merge (map (events . fst . snd) ps) |> scanFrom ini
 
 parameters {0 f        : Type}
            {auto ipf   : Interpolation f}
