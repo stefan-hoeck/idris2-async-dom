@@ -133,7 +133,7 @@ nodeWithID (EEl t x)  =
   (\(i,a) => Just (voidRef i,EEl t a)) <$> attributesWithID t x
 nodeWithID (Raw _)    = pure Nothing
 nodeWithID (Text _)   = pure Nothing
-nodeWithID Empty = ?nodeWithID_rhs_4
+nodeWithID Empty      = pure Nothing
 
 parameters {auto lio : LIO io}
            (tpe      : InputType)
