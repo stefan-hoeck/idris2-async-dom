@@ -369,6 +369,10 @@ export %hint
 signalSink : (r : SignalRef t) => Sink t
 signalSink = S (put1 r)
 
+export %hint
+emptySignalSink : (r : SignalRef (Maybe t)) => Sink t
+emptySignalSink = S (put1 r . Just)
+
 export covering
 pullErr : AsyncStream f es Void -> Async f es ()
 pullErr s =
