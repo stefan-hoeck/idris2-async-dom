@@ -86,7 +86,7 @@ parameters (parent : Act (Ref Void, List HTMLNode -> Widget ListEv))
   |||
   ||| All rows are displayed in the `parent` node.
   export
-  editList : Editor (List t)
+  editList : {default 0xffff_fffe limit : Nat} -> Editor (List t)
   editList =
     E $ \m => do
       (ref, makeW) <- parent
@@ -95,6 +95,6 @@ parameters (parent : Act (Ref Void, List HTMLNode -> Widget ListEv))
       let W n listEvs := makeW (map node rows)
       pure $ W n $
         (emits (map events rows) <+> evalMap (add ref) listEvs)
-        |> parJoin 1000
+        |> parJoin (S limit)
         |> scanFrom1 (map2 Valid ini)
         |> P.mapOutput (travres [<])
