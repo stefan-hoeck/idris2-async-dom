@@ -104,10 +104,10 @@ currentCalc gs = case gs.calcs of
 pictures : Vect 11 String
 pictures = map (\n => "pics/pic\{show n}.jpg") (fromList [S Z .. 11])
 
-style : Result -> Maybe String
-style Ended       = Nothing
-style Correct     = Just "color : \{green}"
-style (Wrong _ _) = Just "color : \{red}"
+resultStyle : Result -> List Declaration
+resultStyle Ended       = []
+resultStyle Correct     = [color green]
+resultStyle (Wrong _ _) = [color red]
 
 language : Language -> String
 language DE = "Sprache"
@@ -275,7 +275,7 @@ run =
     disabledM resultIn $ currentCalc s2
     text calc $ maybe "" dispCalc (currentCalc s2)
     text out  $ maybe "" (reply s2.lang) s2.result
-    attr pic  $ style "background-image : url('\{s.pic}');"
-    attr out  $ style (fromMaybe "" $ s2.result >>= style)
+    attr pic  $ style [backgroundImage "url(\{s.pic})"]
+    attr out  $ style (maybe [] resultStyle s2.result)
     render pic (dispState s2)
     pure s2
