@@ -14,6 +14,12 @@ url    = "https://github.com/stefan-hoeck/idris2-css"
 commit = "latest:main"
 ipkg   = "css.ipkg"
 
+[custom.all.async]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-async"
+commit = "latest:main"
+ipkg   = "async.ipkg"
+
 [custom.all.streams]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-streams"
