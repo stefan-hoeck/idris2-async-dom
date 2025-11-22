@@ -5,6 +5,7 @@ import Data.Linear.Token
 import Data.List
 import Data.Maybe
 import Data.String
+import Text.CSS.Declaration
 import Text.HTML.Event
 import Text.HTML.Ref
 import Text.HTML.Tag
@@ -352,9 +353,9 @@ export %inline
 src : String -> Attribute t
 src = Str "src"
 
-export %inline
-style : String -> Attribute t
-style = Str "style"
+export
+style : List Declaration -> Attribute t
+style = Str "style" . fastConcat . map interpolate
 
 export %inline
 tabindex : Int32 -> Attribute t

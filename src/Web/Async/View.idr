@@ -324,37 +324,3 @@ parameters {auto has : Has JSErr es}
   export %inline
   blur : Ref t -> JS es ()
   blur r = castElementByRef {t = HTMLElement} r >>= blur
-
--- ||| Renders a scene at a canvas element
--- export %inline
--- renderWithMetrics : Ref Tag.Canvas -> (TextMeasure => CanvasDims -> Scene) -> JS es ()
--- renderWithMetrics r s = cmd_ (renderWithMetrics r s)
---
--- ||| Renders a scene at a canvas element
--- export %inline
--- renderWithDims : Ref Tag.Canvas -> (CanvasDims -> Scene) -> JS es ()
--- renderWithDims r s = cmd_ (render r s)
---
--- ||| Renders a scene at a canvas element
--- export %inline
--- render : Ref Tag.Canvas -> Scene -> JS es ()
--- render r = renderWithDims r . const
---
--- ||| Adjusts the dimensions of a `HTMLCanvasElement`
--- export
--- setCanvasDims : Ref Tag.Canvas -> CanvasDims -> JS es ()
--- setCanvasDims r d =
---   cmd_ $ do
---     c <- castElementByRef {t = HTMLCanvasElement} r
---     set (height c) (cast d.cheight)
---     set (width c) (cast d.cwidth)
---
--- ||| Provides a `TextMeasure` utility from the given `Canvas` to run the given
--- ||| command.
--- export
--- withMetricsFor : Ref Tag.Canvas -> (TextMeasure => JS es ()) -> JS es ()
--- withMetricsFor ref c =
---   C $ \h => do
---     canvas <- castElementByRef {t = HTMLCanvasElement} ref
---     ctxt   <- context2D canvas
---     run (withMetrics ctxt c) h
