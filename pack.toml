@@ -13,3 +13,9 @@ type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-css"
 commit = "latest:main"
 ipkg   = "css.ipkg"
+
+[custom.all.streams]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-streams"
+commit = "latest:main"
+ipkg   = "streams.ipkg"
