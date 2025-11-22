@@ -49,7 +49,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ cssClass requestContent
+      [ class requestContent
           [ Display             $ Area
               [MinContent, MaxContent, MaxContent]
               [px 200, px 400]
@@ -67,5 +67,5 @@ css =
 
   , ref quoteInfo [gridArea Info, textAlign End]
 
-  , cssClass quoteBtn [gridArea Btn]
+  , class quoteBtn [gridArea Btn]
   ]

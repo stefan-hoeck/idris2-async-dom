@@ -5,6 +5,7 @@ import Data.Linear.Token
 import Data.List
 import Data.Maybe
 import Data.String
+import Text.CSS.Class
 import Text.CSS.Declaration
 import Text.HTML.Event
 import Text.HTML.Ref
@@ -97,18 +98,6 @@ Show InputType where
   show Time     = "time"
   show URL      = "url"
   show Week     = "week"
-
-||| A CSS class
-public export
-record Class where
-  constructor C
-  value : String
-
-%runElab derive "Class" [Show,Eq,Ord,FromString]
-
-public export
-0 Classes : Type
-Classes = List Class
 
 ||| An attribute indexed by the `HTMLTag` used for the element
 ||| in question.

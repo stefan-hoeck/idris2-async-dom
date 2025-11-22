@@ -91,10 +91,6 @@ widgetLabel = "widgetlabel"
 --          Rules
 --------------------------------------------------------------------------------
 
-export %inline
-cssClass : Class -> List Declaration -> Rule n
-cssClass s = sel (class s.value)
-
 export
 coreCSS : List (Rule 1)
 coreCSS =
@@ -111,7 +107,7 @@ coreCSS =
       , margin          $ px 0
       ]
 
-  , cssClass contentList
+  , class contentList
       [ alignSelf        Center
       , backgroundColor  darker_grey
       , display          Flex
@@ -122,7 +118,7 @@ coreCSS =
       , minWidth         $ perc 80
       ]
 
-  , cssClass pageTitle
+  , class pageTitle
       [ borderStyle      $ Bottom Solid
       , borderWidth      $ Bottom (px 5)
       , borderColor      $ Bottom base80
@@ -131,7 +127,7 @@ coreCSS =
       , textAlign        Center
       ]
 
-  , cssClass contentHeader
+  , class contentHeader
       [ display              Grid
       , columnGap            $ px 10
       , gridTemplateColumns  [px 170, fr 1, fr 3]
@@ -141,7 +137,7 @@ coreCSS =
       , padding              $ VH (px 30) (px 10)
       ]
 
-  , cssClass widget
+  , class widget
       [ backgroundColor lighter_grey
       , borderRadius    $ px 8
       , borderStyle     $ All Solid
@@ -152,39 +148,39 @@ coreCSS =
       , padding         $ px 3
       ]
 
-  , sel [class widget.value, Hover]
+  , sel [class widget, Hover]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget.value, Active]
+  , sel [class widget, Active]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget.value, FocusVisible]
+  , sel [class widget, FocusVisible]
       [ backgroundColor lightest_grey
       , borderColor     $ All comp60
       ]
 
-  , sel [class widget.value, Disabled]
+  , sel [class widget, Disabled]
       [ backgroundColor light_grey
       , borderColor     $ All dark_grey
       ]
 
-  , cssClass textIn
+  , class textIn
       [ textAlign       End ]
 
-  , cssClass selectIn
+  , class selectIn
       [ textAlign       End ]
 
-  , cssClass exampleSelector
+  , class exampleSelector
       [ fontSize        Large
       , gridColumn      $ At 2
       ]
 
-  , sel [class widget.value, Invalid]
+  , sel [class widget, Invalid]
       [ borderColor     $ All red ]
 
-  , cssClass widgetLabel [ fontSize Large ]
+  , class widgetLabel [ fontSize Large ]
   ]

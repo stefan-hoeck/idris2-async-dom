@@ -49,7 +49,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ cssClass ballsContent
+      [ class ballsContent
           [ display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent]
@@ -66,7 +66,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class ballsContent.value
+      [ class ballsContent
           [ display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent, fr 1]
@@ -82,7 +82,7 @@ css =
           ]
       ]
 
-  , cssClass lblCount [ gridArea LNum ]
+  , class lblCount [ gridArea LNum ]
 
   , ref txtCount
       [ gridArea        INum

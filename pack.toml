@@ -8,11 +8,11 @@ type   = "local"
 path   = "docs"
 ipkg   = "docs.ipkg"
 
-[custom.all.bytestring]
+[custom.all.css]
 type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-bytestring"
+url    = "https://github.com/stefan-hoeck/idris2-css"
 commit = "latest:main"
-ipkg   = "bytestring.ipkg"
+ipkg   = "css.ipkg"
 
 [custom.all.async]
 type   = "git"
