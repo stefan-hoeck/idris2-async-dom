@@ -71,7 +71,7 @@ AreaTag Tag where
 export
 css : List (Rule 1)
 css =
-  [ cssClass resetContent
+  [ class resetContent
       [ Display             $ Area
           (replicate 4 MinContent)
           [MaxContent, MaxContent]
@@ -86,19 +86,19 @@ css =
       , padding             $ VH (px 20) (px 10)
       ]
 
-  , cssClass resetLbl  [ gridArea LRes ]
+  , class resetLbl  [ gridArea LRes ]
 
   , ref btnReset  [ gridArea BRes ]
 
-  , cssClass incLbl    [ gridArea LInc ]
+  , class incLbl    [ gridArea LInc ]
 
   , ref btnInc    [ gridArea BInc ]
 
-  , cssClass decLbl    [ gridArea LDec ]
+  , class decLbl    [ gridArea LDec ]
 
   , ref btnDec    [ gridArea BDec ]
 
-  , cssClass countLbl  [ gridArea LCnt ]
+  , class countLbl  [ gridArea LCnt ]
 
   , ref out
       [ fontSize        Large

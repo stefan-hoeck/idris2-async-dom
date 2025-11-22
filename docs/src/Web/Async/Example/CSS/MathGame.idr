@@ -83,7 +83,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ cssClass mathContent
+      [ class mathContent
           [ Display           $ Area
               (replicate 6 MinContent)
               [MaxContent, MaxContent]
@@ -102,7 +102,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class mathContent.value
+      [ class mathContent
           [ Display           $ Area
               (replicate 6 MinContent)
               [MaxContent, MaxContent, fr 1]
@@ -120,7 +120,7 @@ css =
           ]
       ]
 
-  , cssClass lblLang [ gridArea LLan ]
+  , class lblLang [ gridArea LLan ]
 
   , ref langIn
       [ gridArea        ILan
@@ -158,7 +158,7 @@ css =
       , width           $ px 500
       ]
 
-  , cssClass correct [ color green ]
+  , class correct [ color green ]
 
-  , cssClass wrong [ color red ]
+  , class wrong [ color red ]
   ]

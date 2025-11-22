@@ -75,7 +75,7 @@ export
 css : List (Rule 1)
 css =
   [ Media "min-width: 300px"
-      [ cssClass performanceContent
+      [ class performanceContent
           [ Display             $ Area
               (replicate 4 MinContent)
               [MaxContent, fr 1, MaxContent]
@@ -91,7 +91,7 @@ css =
       ]
 
   , Media "min-width: 800px"
-      [ class performanceContent.value
+      [ class performanceContent
           [ Display             $ Area
               (replicate 4 MinContent)
               [MaxContent, MaxContent, MaxContent, fr 1]
@@ -106,7 +106,7 @@ css =
           ]
       ]
 
-  , cssClass numButtonsLbl [ gridArea LBtn ]
+  , class numButtonsLbl [ gridArea LBtn ]
 
   , ref natIn
       [ gridArea        NBtn
@@ -115,7 +115,7 @@ css =
 
   , ref btnRun [ gridArea BRun ]
 
-  , cssClass sumLbl [ gridArea LSum ]
+  , class sumLbl [ gridArea LSum ]
 
   , ref out
       [ gridArea        OSum
@@ -132,12 +132,12 @@ css =
       , padding         $ Left (px 10)
       ]
 
-  , cssClass grid
+  , class grid
       [ display         Flex
       , flexWrap        "wrap"
       ]
 
-  , cssClass inc
+  , class inc
       [ flexBasis       $ perc 5
       , fontSize        XXSmall
       ]
