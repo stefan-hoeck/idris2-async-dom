@@ -55,7 +55,7 @@ selectEntries es sel toEv attrs =
     opt : (Nat,t,String) -> HTMLNode
     opt (x,v,s) = option [value (show x), selected (sel v)] [Text s]
 
-    grp : (String,List (Nat,t,String)) -> List HTMLNode
+    grp : (String,List (Nat,t,String)) -> HTMLNodes
     grp ("",ps) = map opt ps
     grp (s,ps)  = [optgroup [label s] $ map opt ps]
 

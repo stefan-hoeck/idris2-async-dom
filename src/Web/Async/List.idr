@@ -63,7 +63,7 @@ initial (Just ts) =
   traverse1 (\v,t => let tok # t := token1 t in (tok,v) # t) ts
 
 parameters {default 0xffff_fffe limit : Nat}
-           (parent : Act (Ref Void, List HTMLNode -> Widget ListEv))
+           (parent : Act (Ref Void, HTMLNodes -> Widget ListEv))
            (row    : HTMLNode -> Act (Ref Void, Widget ()))
            (ed     : Editor t)
 

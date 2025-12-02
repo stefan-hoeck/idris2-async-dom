@@ -42,7 +42,7 @@ printError (JSONError str x) =
   \{x}
   """
 
-dispResult : Either HTTPError Quote -> List HTMLNode
+dispResult : Either HTTPError Quote -> HTMLNodes
 dispResult (Left x)  = [ div [class requestError ] [ Text $ printError x] ]
 dispResult (Right q) =
   [ Text "— "
