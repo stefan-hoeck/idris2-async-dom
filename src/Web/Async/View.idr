@@ -131,7 +131,7 @@ setAttribute el Empty             = pure ()
 -- Node Preparation
 --------------------------------------------------------------------------------
 
-addNodes : ParentNode -> List HTMLNode -> IO1 ()
+addNodes : ParentNode -> HTMLNodes -> IO1 ()
 
 addNode : ParentNode -> HTMLNode -> IO1 ()
 addNode p (El {tag} _ xs ys) t =
@@ -160,11 +160,7 @@ addNodes p = assert_total $ traverse1_ (addNode p)
 parameters {auto has : Has JSErr es}
 
   %inline
-  setupNodes :
-       (Element -> Node -> JS es ())
-    -> Ref t
-    -> List HTMLNode
-    -> JS es ()
+  setupNodes : (Element -> Node -> JS es ()) -> Ref t -> HTMLNodes -> JS es ()
   setupNodes adj r ns = do
     elem <- castElementByRef {t = Element} r
     df   <- primIO prim__createDocumentFragment
@@ -182,7 +178,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| inserts them as the children of the given target.
   export
-  children : Ref t -> List HTMLNode -> JS es ()
+  children : Ref t -> HTMLNodes -> JS es ()
   children = setupNodes (\el => replaceChildren (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
@@ -217,7 +213,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| inserts them after the given child node.
   export
-  afterMany : Ref t -> List HTMLNode -> JS es ()
+  afterMany : Ref t -> HTMLNodes -> JS es ()
   afterMany = setupNodes (\el => after (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
@@ -229,7 +225,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| inserts them before the given child node.
   export
-  beforeMany : Ref t -> List HTMLNode -> JS es ()
+  beforeMany : Ref t -> HTMLNodes -> JS es ()
   beforeMany = setupNodes (\el => before (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
@@ -241,7 +237,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| appends them to the given element's list of children
   export
-  appendMany : Ref t -> List HTMLNode -> JS es ()
+  appendMany : Ref t -> HTMLNodes -> JS es ()
   appendMany = setupNodes (\el => append (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
@@ -253,7 +249,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| prepends them to the given element's list of children
   export
-  prependMany : Ref t -> List HTMLNode -> JS es ()
+  prependMany : Ref t -> HTMLNodes -> JS es ()
   prependMany = setupNodes (\el => prepend (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
@@ -265,7 +261,7 @@ parameters {auto has : Has JSErr es}
   ||| Sets up the reactive behavior of the given `Node`s and
   ||| replaces the given element.
   export
-  replaceMany : Ref t -> List HTMLNode -> JS es ()
+  replaceMany : Ref t -> HTMLNodes -> JS es ()
   replaceMany = setupNodes (\el => replace (up el))
 
   ||| Sets up the reactive behavior of the given `Node` and
