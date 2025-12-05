@@ -385,6 +385,66 @@ parameters {auto sink : Sink ev}
   click = Event . Click
 
   export %inline
+  mouseDown : (MouseInfo -> Maybe ev) -> Attribute t
+  mouseDown = Event . MouseDown
+
+  export %inline
+  mouseUp : (MouseInfo -> Maybe ev) -> Attribute t
+  mouseUp = Event . MouseUp
+
+  export %inline
+  mouseMove : (MouseInfo -> Maybe ev) -> Attribute t
+  mouseMove = Event . MouseMove
+
+  export
+  leftDown : (MouseInfo -> Maybe ev) -> Attribute t
+  leftDown f = mouseDown (\mi => guard (mi.button == 0) >> f mi)
+
+  export
+  leftUp : (MouseInfo -> Maybe ev) -> Attribute t
+  leftUp f = mouseUp (\mi => guard (mi.button == 0) >> f mi)
+
+  export
+  rightDown : (MouseInfo -> Maybe ev) -> Attribute t
+  rightDown f = mouseDown (\mi => guard (mi.button == 2) >> f mi)
+
+  export
+  rightUp : (MouseInfo -> Maybe ev) -> Attribute t
+  rightUp f = mouseUp (\mi => guard (mi.button == 2) >> f mi)
+
+  export
+  middleDown : (MouseInfo -> Maybe ev) -> Attribute t
+  middleDown f = mouseDown (\mi => guard (mi.button == 1) >> f mi)
+
+  export
+  middleUp : (MouseInfo -> Maybe ev) -> Attribute t
+  middleUp f = mouseUp (\mi => guard (mi.button == 1) >> f mi)
+
+  export %inline
+  onLeftDown : ev -> Attribute t
+  onLeftDown = leftDown . const . Just
+
+  export %inline
+  onLeftUp : ev -> Attribute t
+  onLeftUp = leftUp . const . Just
+
+  export %inline
+  onRightDown : ev -> Attribute t
+  onRightDown = rightDown . const . Just
+
+  export %inline
+  onRightUp : ev -> Attribute t
+  onRightUp = rightUp . const . Just
+
+  export %inline
+  onMiddleDown : ev -> Attribute t
+  onMiddleDown = middleDown . const . Just
+
+  export %inline
+  onMiddleUp : ev -> Attribute t
+  onMiddleUp = middleUp . const . Just
+
+  export %inline
   onClick : ev -> Attribute t
   onClick = click . const . Just
 
