@@ -245,14 +245,14 @@ public export
 dummy : t -> Editor t
 dummy v = E $ \_ => pure (once (Valid v))
 
-export
+export %inline
 txtEdit :
-     {auto ip : Interpolation t}
-  -> (parse   : String -> EditRes t)
-  -> (attrs   : List (Attribute Tag.Input))
+     (parse : String -> EditRes t)
+  -> (tpe   : InputType)
+  -> (ini   : Maybe t -> String)
+  -> (attrs : List (Attribute Tag.Input))
   -> Editor t
-txtEdit parse as =
-  E $ \m => valIn Text as (maybe "" interpolate m) parse
+txtEdit parse tpe ini as = E $ \m => valIn tpe as (ini m) parse
 
 export %inline
 selEdit :
