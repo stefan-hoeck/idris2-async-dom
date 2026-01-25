@@ -17,19 +17,19 @@ confirm Cancel y = Valid Nothing
 confirm OK     y = map Just y
 
 confirmStream :
-     Ref Void
+     Sink (EditRes e)
   -> JSStream ConfirmEv
   -> JSStream (EditRes e)
   -> JSStream (EditRes $ Maybe e)
 confirmStream ref cs es =
-  resource (hold1 $ es |> observe (disabledEdit ref)) $ \esh =>
+  resource (hold1 $ es |> observe sink) $ \esh =>
     zipWith confirm cs esh.stream
 
 ||| Wraps and editor in a parent node with buttons (or similar
 ||| interactive elements) for cancellation and confirmation.
 |||
-||| The resulting stream will disable the "confirm" button whenever
-||| the current state of the input widget is invalid (or missing).
+||| The resulting stream will pass on editing results, so that
+||| the buttons can be adjusted (for instance, disabled) accordingly.
 |||
 ||| The resulting stream fires only `Valid` events: `Nothing` in case
 ||| of cancellation and `Just v` in case of confirmation.
@@ -38,7 +38,7 @@ confirmStream ref cs es =
 ||| at most.
 export
 confirmed :
-     (wrap : HTMLNode -> Act (Ref Void, Widget ConfirmEv))
+     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
   -> Editor (Maybe e)
 confirmed wrap (E f) =
@@ -51,7 +51,7 @@ confirmed wrap (E f) =
 ||| event.
 export
 confirmed1 :
-     (wrap : HTMLNode -> Act (Ref Void, Widget ConfirmEv))
+     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
   -> Editor (Maybe e)
 confirmed1 wrap = mapEvents (take 1) . confirmed wrap

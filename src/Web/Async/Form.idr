@@ -17,20 +17,18 @@ record FormField where
   constructor FF
   name : String
   node : HTMLNode
-  err  : Ref Label
 
-toField : (String,Widget t, Ref Label) -> Maybe FormField
-toField (nm, W Empty _, _) = Nothing
-toField (nm, W n _, r)     = Just (FF nm n r)
+toField : (String,Widget t) -> Maybe FormField
+toField (nm, W Empty _) = Nothing
+toField (nm, W n _)     = Just (FF nm n)
 
-formStream : List (String, Widget (t -> t),Ref Label) -> t -> JSStream t
-formStream ps ini = merge (map (events . fst . snd) ps) |> scanFrom1 ini
+formStream : List (String, Widget (t -> t)) -> t -> JSStream t
+formStream ps ini = merge (map (events . snd) ps) |> scanFrom1 ini
 
 parameters {0 f        : Type}
            {auto ipf   : Interpolation f}
            (0 rec      : (f -> Type) -> Type)
            (formNode   : List FormField -> Act HTMLNode)
-           (valid      : {0 t : _} -> Ref Label -> EditRes t -> Act ())
            {0 g        : f -> Type}
            {auto sings : rec Singleton}
            {auto fuc   : FunctorB f rec}
@@ -42,7 +40,7 @@ parameters {0 f        : Type}
   -- which emits functions used for updating the barbie record,
   -- and a label ID used for writing error messages.
   0 WForm : Type
-  WForm = (String,Widget (rec (EditRes . g) -> rec (EditRes . g)),Ref Label)
+  WForm = (String,Widget (rec (EditRes . g) -> rec (EditRes . g)))
 
   -- Creates the information for editing a single
   -- field of the record.
@@ -56,18 +54,14 @@ parameters {0 f        : Type}
     -> Maybe (rec g)
     -> Act WForm
   editField (Val v) (E fun) mrec = do
-    -- create a unique ID used for error messages
-    ref   <- uniqueRef Label
-
     -- create the HTML node and input stream
     W n s <- fun $ map (field g v).get_ mrec
 
-    -- adjust the input stream so that validation messages
-    -- are sent to `ref` and all input is used to update
+    -- adjust the input stream so that all input is used to update
     -- the corresponding field of the barbie
-    let s2 := s |> observe (valid ref) |> mapOutput (set (field' v))
+    let s2 := s |> P.mapOutput (set (field' v))
 
-    pure $ (interpolate v, W n s2, ref)
+    pure $ (interpolate v, W n s2)
 
   ||| An editable web form where the different fields of a
   ||| record can be edited and validated.
@@ -81,8 +75,6 @@ parameters {0 f        : Type}
   |||                field values.
   ||| @ `formNode` : used to group and display the different
   |||                form fields in a single HTML node.
-  |||
-  ||| @ `validate` : used send validation messages to a label or similar
   |||
   ||| Note: For uneditable record fields that should not appear in the
   |||       user interface, use a `dummy` editor.
