@@ -122,6 +122,9 @@ data DOMEvent : Type -> Type where
   -- Resize Events
   Resize     : (Rect -> Maybe a)  -> DOMEvent a
 
+  -- DOM Changes
+  Remove     : a -> DOMEvent a
+
 export
 Functor DOMEvent where
   map f (Click g)      = Click (map f . g)
@@ -143,3 +146,4 @@ Functor DOMEvent where
   map f (Scroll g)     = Scroll (map f . g)
   map f (Wheel g)      = Wheel (map f . g)
   map f (Resize g)     = Resize (map f . g)
+  map f (Remove x)     = Remove (f x)
