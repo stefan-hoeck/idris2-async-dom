@@ -24,6 +24,9 @@ import Web.Internal.Types
 %foreign "browser:lambda:(e,f,w) => {const o = new ResizeObserver((es) => f(e.getBoundingClientRect())(w));o.observe(e)}"
 prim__observeResize : Element -> (DOMRect -> PrimIO ()) -> PrimIO ()
 
+%foreign "browser:lambda:(e,f,w) => {const o = new MutationObserver(() => if (!e.isConnected) {o.disconnect(); f(w);}); o.observe(document.body, {childList:true, subtree:true});}"
+prim__observeRemove : Element -> PrimIO () -> PrimIO ()
+
 export
 %foreign "browser:lambda:x=>x.bubbles?1:0"
 bubbles : Event -> Bool
@@ -117,11 +120,14 @@ registerDOMEvent prev stop el de =
 
     onresize : (Rect -> Maybe e) -> IO1 ()
     onresize f =
-      let Just va := castTo Element el | Nothing => pure ()
-       in ffi $ prim__observeResize va $ \r => primRun $
-            toRect r >>= maybe (pure ()) h.sink1 . f
+     let Just va := castTo Element el | Nothing => pure ()
+      in ffi $ prim__observeResize va $ \r => primRun $
+           toRect r >>= maybe (pure ()) h.sink1 . f
 
     onremove : e -> IO1 ()
+    onremove v =
+     let Just va := castTo Element el | Nothing => pure ()
+      in ffi (prim__observeRemove va (primRun (h.sink1 v)))
 
 export
 setAttribute : Element -> Attribute t -> IO1 ()
