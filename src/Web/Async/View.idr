@@ -24,7 +24,7 @@ import Web.Internal.Types
 %foreign "browser:lambda:(e,f,w) => {const o = new ResizeObserver((es) => f(e.getBoundingClientRect())(w));o.observe(e)}"
 prim__observeResize : Element -> (DOMRect -> PrimIO ()) -> PrimIO ()
 
-%foreign "browser:lambda:(e,f,w) => {const o = new MutationObserver(() => if (!e.isConnected) {o.disconnect(); f(w);}); o.observe(document.body, {childList:true, subtree:true});}"
+%foreign "browser:lambda:(e,f,w) => {const o = new MutationObserver(() => {if (!e.isConnected) {o.disconnect(); f(w);}}); o.observe(document.body, {childList : true, subtree : true});}"
 prim__observeRemove : Element -> PrimIO () -> PrimIO ()
 
 export
