@@ -527,3 +527,7 @@ parameters {auto sink : Sink ev}
   export
   onFocus : ev -> Attribute t
   onFocus = Event . Focus
+
+  export
+  onRemove : ev -> Attribute t
+  onRemove = Event . Remove

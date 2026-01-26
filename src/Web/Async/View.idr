@@ -94,6 +94,7 @@ registerDOMEvent prev stop el de =
     Scroll f     => inst "scroll" scrollInfo f
     Wheel f      => inst "wheel" wheelInfo f
     Resize f     => onresize f
+    Remove v     => onremove v
 
   where
     inst :
@@ -119,6 +120,8 @@ registerDOMEvent prev stop el de =
       let Just va := castTo Element el | Nothing => pure ()
        in ffi $ prim__observeResize va $ \r => primRun $
             toRect r >>= maybe (pure ()) h.sink1 . f
+
+    onremove : e -> IO1 ()
 
 export
 setAttribute : Element -> Attribute t -> IO1 ()
