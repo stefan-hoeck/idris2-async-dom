@@ -4,10 +4,12 @@ import Data.Linear.Traverse1
 import Data.Either
 import Data.Maybe
 import Data.String
+import IO.Async.Logging
 import JS
 import Syntax.T1
 import Text.CSS
 import Text.HTML
+import Text.HTML.DomID
 import Web.Async.Event
 import Web.Async.Util
 import Web.Internal.Types
@@ -320,3 +322,42 @@ parameters {auto has : Has JSErr es}
   export %inline
   blur : Ref t -> JS es ()
   blur r = castElementByRef {t = HTMLElement} r >>= blur
+
+--------------------------------------------------------------------------------
+-- Utils with error handling
+--------------------------------------------------------------------------------
+
+parameters {auto lg  : Loggable JSErr}
+           {auto log : Logger JS}
+
+  export %inline
+  elemChildren : DomID -> HTMLNodes -> JS [] ()
+  elemChildren i = logErrs . children {es = [JSErr]} (elemRef i)
+
+  export %inline
+  elemChild : DomID -> HTMLNode -> JS [] ()
+  elemChild i = logErrs . child {es = [JSErr]} (elemRef i)
+
+  export %inline
+  elemAppend : DomID -> HTMLNode -> JS [] ()
+  elemAppend i = logErrs . append {es = [JSErr]} (elemRef i)
+
+  export %inline
+  elemPrepend : DomID -> HTMLNode -> JS [] ()
+  elemPrepend i = logErrs . prepend {es = [JSErr]} (elemRef i)
+
+  export %inline
+  clearElem : DomID -> JS [] ()
+  clearElem i = elemChildren i []
+
+  export %inline
+  removeElem : DomID -> JS [] ()
+  removeElem = logErrs . remove {es = [JSErr]} . elemRef
+
+  export %inline
+  replaceElem : DomID -> HTMLNode -> JS [] ()
+  replaceElem i = logErrs . replace {es = [JSErr]} (elemRef i)
+
+  export %inline
+  btnAttr : DomID -> Attribute Tag.Button -> JS [] ()
+  btnAttr v a = logErrs $ attr {es = [JSErr]} (btnRef v) a
