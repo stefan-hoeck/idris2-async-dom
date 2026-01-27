@@ -172,6 +172,11 @@ listInit (Just x) f xs     = Just x
 listInit Nothing  f (x::_) = Just (f x)
 listInit _        _ _      = Nothing
 
+entriesInit : List (SelectEntry t) -> Maybe t
+entriesInit []                = Nothing
+entriesInit (Title _   :: xs) = entriesInit xs
+entriesInit (Entry v _ :: xs) = Just v
+
 parameters {auto lio : LIO io}
            {auto eq  : Eq t}
 
@@ -193,6 +198,24 @@ parameters {auto lio : LIO io}
     s <- signal (maybe Missing Valid ini)
     pure $ W
       (selectFromListBy vs ((ini ==) . Just . f) g (Valid . f) as)
+      (discrete s)
+
+  ||| A select element displaying the values of type `v`
+  ||| shown in the given list.
+  |||
+  ||| It fires events of type `t`, and uses two functions, one for
+  ||| converting elements to events and one for displaying elements.
+  export
+  selEntries :
+       List (SelectEntry t)
+    -> List (Attribute Select)
+    -> Maybe t
+    -> io (Widget (EditRes t))
+  selEntries vs as m = do
+    let ini := m <|> entriesInit vs
+    s <- signal (maybe Missing Valid ini)
+    pure $ W
+      (selectEntries vs ((ini ==) . Just) Valid as)
       (discrete s)
 
 --------------------------------------------------------------------------------
