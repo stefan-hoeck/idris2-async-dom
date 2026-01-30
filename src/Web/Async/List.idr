@@ -2,6 +2,7 @@ module Web.Async.List
 
 import Data.Linear.Traverse1
 import Data.Linear.Unique
+import Data.List1
 import Derive.Prelude
 import Text.HTML.DomID
 import Web.Async.Form
@@ -99,3 +100,11 @@ parameters {default 0xffff_fffe limit : Nat}
         |> parJoin (S limit)
         |> scanFrom1 (map2 Valid ini)
         |> P.mapOutput (travres [<])
+
+||| Like `editList` but for non-empty lists.
+export
+editList1 : Editor (List t) -> Editor (List1 t)
+editList1 =
+  refineEdit (Just . forget) $ \case
+    x::xs => Valid $ x:::xs
+    []    => Missing

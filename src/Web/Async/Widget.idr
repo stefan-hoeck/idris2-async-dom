@@ -265,11 +265,11 @@ editP p (E f) = E $ map3 p.reverseGet . f . (>>= first p)
 ||| Refines an editor to produce values of a more restricted type.
 export
 refineEdit :
-     (ref : t1 -> EditRes t2)
-  -> (t2 -> Maybe t1)
+     (t2 -> Maybe t1)
+  -> (refine : t1 -> EditRes t2)
   -> Editor t1
   -> Editor t2
-refineEdit ref ini (E w) = E $ \m => map (>>= ref) <$> w (m >>= ini)
+refineEdit ini f (E w) = E $ \m => map (>>= f) <$> w (m >>= ini)
 
 export %inline
 mapEvents : (JSStream (EditRes t) -> JSStream (EditRes t)) -> Editor t -> Editor t
