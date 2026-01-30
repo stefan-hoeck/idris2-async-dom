@@ -46,10 +46,15 @@ Functor EditRes where
 export
 Applicative EditRes where
   pure = Valid
-  Valid f   <*> Valid v   = Valid (f v)
-  Invalid x <*> _         = Invalid x
-  _         <*> Invalid x = Invalid x
-  _         <*> _         = Missing
+  Valid f   <*> v  = map f v
+  Invalid x <*> _  = Invalid x
+  Missing   <*> _  = Missing
+
+export
+Monad EditRes where
+  Missing   >>= _ = Missing
+  Invalid x >>= _ = Invalid x
+  Valid x   >>= f = f x
 
 --------------------------------------------------------------------------------
 -- Widgets
@@ -256,6 +261,15 @@ editI i (E f) = E $ map3 i.get_ . f . map i.reverseGet
 export
 editP : Prism' t2 t1 -> Editor t1 -> Editor t2
 editP p (E f) = E $ map3 p.reverseGet . f . (>>= first p)
+
+||| Refines an editor to produce values of a more restricted type.
+export
+refineEdit :
+     (t2 -> Maybe t1)
+  -> (refine : t1 -> EditRes t2)
+  -> Editor t1
+  -> Editor t2
+refineEdit ini f (E w) = E $ \m => map (>>= f) <$> w (m >>= ini)
 
 export %inline
 mapEvents : (JSStream (EditRes t) -> JSStream (EditRes t)) -> Editor t -> Editor t
