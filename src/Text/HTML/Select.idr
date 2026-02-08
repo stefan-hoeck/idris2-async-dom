@@ -2,6 +2,7 @@ module Text.HTML.Select
 
 import Data.List
 import Data.Nat
+import FS.Concurrent.Signal
 import Text.HTML
 
 %default total
