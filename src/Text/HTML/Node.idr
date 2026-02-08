@@ -2,6 +2,7 @@ module Text.HTML.Node
 
 import JS
 import Data.String
+import FS.Concurrent.Signal
 import Text.HTML.Attribute
 import Text.HTML.Event
 import Text.HTML.Ref

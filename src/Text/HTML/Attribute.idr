@@ -5,6 +5,7 @@ import Data.Linear.Token
 import Data.List
 import Data.Maybe
 import Data.String
+import FS.Concurrent.Signal
 import Text.CSS.Class
 import Text.CSS.Declaration
 import Text.HTML.Event
@@ -13,28 +14,6 @@ import Text.HTML.Tag
 
 %default total
 %language ElabReflection
-
---------------------------------------------------------------------------------
--- Sink
---------------------------------------------------------------------------------
-
-public export
-record Sink a where
-  [noHints]
-  constructor S
-  sink1 : a -> IO1 ()
-
-export %inline
-cmap : (b -> a) -> Sink a -> Sink b
-cmap f (S g) = S (g . f)
-
-export %inline
-sink : HasIO io => (s : Sink a) => a -> io ()
-sink = runIO . s.sink1
-
-export %inline
-sinkAs : HasIO io => (0 a : Type) -> (s : Sink a) => a -> io ()
-sinkAs a = sink
 
 --------------------------------------------------------------------------------
 -- Attribute
