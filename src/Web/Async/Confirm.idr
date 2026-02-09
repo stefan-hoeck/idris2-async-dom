@@ -12,18 +12,19 @@ data ConfirmEv = Cancel | OK
 
 %runElab derive "ConfirmEv" [Show,Eq,Ord]
 
-confirm : ConfirmEv -> EditRes e -> EditRes (Maybe e)
-confirm Cancel y = Valid Nothing
-confirm OK     y = map Just y
+confirm : ConfirmEv -> EditRes e -> Maybe (Maybe e)
+confirm OK     (Valid v) = Just (Just v)
+confirm Cancel _         = Just Nothing
+confirm _      _         = Nothing
 
 confirmStream :
      Sink (EditRes e)
   -> JSStream ConfirmEv
   -> JSStream (EditRes e)
-  -> JSStream (EditRes $ Maybe e)
+  -> JSStream (Maybe e)
 confirmStream ref cs es =
   resource (hold1 $ es |> observe sink) $ \esh =>
-    zipWith confirm cs esh.stream
+    zipWith confirm cs esh.stream |> P.catMaybes
 
 ||| Wraps and editor in a parent node with buttons (or similar
 ||| interactive elements) for cancellation and confirmation.
@@ -40,12 +41,12 @@ export
 confirmed :
      (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
-  -> Editor (Maybe e)
-confirmed wrap (E f) =
-  E $ \m => do
-    W inner es        <- f (join m)
-    (btn, W outer cs) <- wrap inner
-    pure (W outer $ confirmStream btn cs es)
+  -> Maybe e
+  -> Act (Widget $ Maybe e)
+confirmed wrap ed m = Prelude.do
+  W inner es        <- ed.widget m
+  (btn, W outer cs) <- wrap inner
+  pure (W outer $ confirmStream btn cs es)
 
 ||| Like `confirmed` but the resulting stream fires only at most one
 ||| event.
@@ -53,5 +54,6 @@ export
 confirmed1 :
      (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
-  -> Editor (Maybe e)
-confirmed1 wrap = mapEvents (take 1) . confirmed wrap
+  -> Maybe e
+  -> Act (Widget $ Maybe e)
+confirmed1 wrap ed = map {events $= take 1} . confirmed wrap ed
