@@ -89,7 +89,8 @@ data Attribute : {0 k : Type} -> (t : k) -> Type where
   Str    : (name : String) -> (value : String) -> Attribute t
   Bool   : (name : String) -> (value : Bool) -> Attribute t
   Event_ :
-       (preventDefault, stopPropagation : Bool)
+       {0 event : Type}
+    -> (preventDefault, stopPropagation : Bool)
     -> {auto sink : Sink event}
     -> DOMEvent event
     -> Attribute t
