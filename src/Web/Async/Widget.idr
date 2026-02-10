@@ -140,22 +140,18 @@ nodeWithID (Raw _)    = pure Nothing
 nodeWithID (Text _)   = pure Nothing
 nodeWithID Empty      = pure Nothing
 
-parameters {auto lio : LIO io}
-           (tpe      : InputType)
+parameters (tpe      : InputType)
            (attrs    : List (Attribute Tag.Input))
 
-  textInP : String -> io (Ref Tag.Input, Widget String)
+  textInP : String -> JS es (Ref Tag.Input, Widget String)
   textInP v = do
-    s      <- signal v
+    E es   <- eventFrom v
     (i,as) <- attributesWithID Tag.Input attrs
-    pure
-      ( i
-      , W (input $ [value v, type tpe, onInput Prelude.id] ++ as) (discrete s)
-      )
+    pure (i, W (input $ [value v, type tpe, onInput Prelude.id] ++ as) es)
 
   ||| An input element that emits `String` events.
   export
-  textIn : String -> io (Widget String)
+  textIn : String -> JS es (Widget String)
   textIn v = snd <$> textInP v
 
   ||| A validated input element that emits events of type
@@ -163,7 +159,7 @@ parameters {auto lio : LIO io}
   |||
   ||| A custom validity message is set in case of invalid input.
   export
-  valIn : String -> (String -> EditRes e) -> io (Widget $ EditRes e)
+  valIn : String -> (String -> EditRes e) -> JS es (Widget $ EditRes e)
   valIn v f = do
     (r, W n evs) <- textInP v
     pure $ W n (observe (validate r . toEither) (mapOutput f evs))
@@ -182,8 +178,7 @@ entriesInit []                = Nothing
 entriesInit (Title _   :: xs) = entriesInit xs
 entriesInit (Entry v _ :: xs) = Just v
 
-parameters {auto lio : LIO io}
-           {auto eq  : Eq t}
+parameters {auto eq  : Eq t}
 
   ||| A select element displaying the values of type `v`
   ||| shown in the given list.
@@ -197,13 +192,11 @@ parameters {auto lio : LIO io}
     -> List v
     -> List (Attribute Select)
     -> Maybe t
-    -> io (Widget (EditRes t))
+    -> JS es (Widget (EditRes t))
   sel f g vs as m = do
     let ini := listInit m f vs
-    s <- signal (maybe Missing Valid ini)
-    pure $ W
-      (selectFromListBy vs ((ini ==) . Just . f) g (Valid . f) as)
-      (discrete s)
+    E es <- eventFrom (maybe Missing Valid ini)
+    pure $ W (selectFromListBy vs ((ini ==) . Just . f) g (Valid . f) as) es
 
   ||| A select element displaying the values of type `v`
   ||| shown in the given list.
@@ -215,13 +208,11 @@ parameters {auto lio : LIO io}
        List (SelectEntry t)
     -> List (Attribute Select)
     -> Maybe t
-    -> io (Widget (EditRes t))
+    -> JS es (Widget (EditRes t))
   selEntries vs as m = do
     let ini := m <|> entriesInit vs
-    s <- signal (maybe Missing Valid ini)
-    pure $ W
-      (selectEntries vs ((ini ==) . Just) Valid as)
-      (discrete s)
+    E es <- eventFrom (maybe Missing Valid ini)
+    pure $ W (selectEntries vs ((ini ==) . Just) Valid as) es
 
 --------------------------------------------------------------------------------
 -- Editor

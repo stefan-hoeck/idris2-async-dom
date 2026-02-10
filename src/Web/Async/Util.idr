@@ -381,8 +381,8 @@ runProg : JSStream Void -> IO ()
 runProg = runJS . pullErr
 
 export
-mvcActSignal : (evs : SignalRef e) => s -> (e -> s -> Act s) -> JSStream Void
-mvcActSignal ini act = discrete evs |> P.evalScans1 ini (flip act) |> drain
+mvcActEvs : JSStream e -> s -> (e -> s -> Act s) -> JSStream Void
+mvcActEvs evs ini act = evs |> P.evalScans1 ini (flip act) |> drain
 
 parameters (ev  : e)
            (ini : s)
@@ -390,8 +390,8 @@ parameters (ev  : e)
   export
   mvcAct : (Sink e => e -> s -> Act s) -> JSStream Void
   mvcAct act = do
-    evs <- signal ev
-    mvcActSignal @{evs} ini act
+    E evs <- exec $ eventFrom ev
+    mvcActEvs evs ini act
 
   export
   mvc : (e -> s -> s) -> (Sink e => e -> s -> Act ()) -> JSStream Void
