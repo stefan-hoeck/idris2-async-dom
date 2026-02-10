@@ -214,10 +214,10 @@ next m s =
 export
 run : JSStream Void
 run = do
-  s <- signal (Next 0)
+  E s <- exec $ eventFrom (Next 0)
   exec $ child exampleDiv content
   bracket (lift1 $ animate Next) lift1 $ \_ =>
-    mvcActSignal @{s} {s = BallsST} init $ \e,s => do
+    mvcActEvs s {s = BallsST} init $ \e,s => do
       case e of
         Run       => pure $ {balls := maybe s.balls initialBalls s.numBalls} s
         NumIn x   => do

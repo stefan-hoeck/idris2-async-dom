@@ -50,6 +50,6 @@ ui : IO ()
 ui =
   runJS $ do
     style appStyle rules
-    app   <- signal Reset
+    E app <- eventFrom Reset
     child contentDiv (content Reset)
-    pullErr $ discrete app |> switchMap prog
+    pullErr $ app |> switchMap prog
