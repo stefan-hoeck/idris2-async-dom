@@ -352,8 +352,16 @@ parameters {auto lg  : Loggable JSErr}
   elemAppend i = logErrs . append {es = [JSErr]} (elemRef i)
 
   export %inline
+  elemAppendMany : DomID -> HTMLNodes -> JS [] ()
+  elemAppendMany i = logErrs . appendMany {es = [JSErr]} (elemRef i)
+
+  export %inline
   elemPrepend : DomID -> HTMLNode -> JS [] ()
   elemPrepend i = logErrs . prepend {es = [JSErr]} (elemRef i)
+
+  export %inline
+  elemPrependMany : DomID -> HTMLNodes -> JS [] ()
+  elemPrependMany i = logErrs . prependMany {es = [JSErr]} (elemRef i)
 
   export %inline
   clearElem : DomID -> JS [] ()
