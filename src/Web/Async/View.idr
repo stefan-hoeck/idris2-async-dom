@@ -336,8 +336,7 @@ parameters {auto has : Has JSErr es}
 -- Utils with error handling
 --------------------------------------------------------------------------------
 
-parameters {auto lg  : Loggable JSErr}
-           {auto log : Logger JS}
+parameters {auto lg  : Loggable JS JSErr}
 
   export %inline
   elemChildren : DomID -> HTMLNodes -> JS [] ()
