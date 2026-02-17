@@ -17,11 +17,11 @@ ipkg   = "css.ipkg"
 [custom.all.async]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-async"
-commit = "latest:refactor_loggable"
+commit = "latest:main"
 ipkg   = "async.ipkg"
 
 [custom.all.streams]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-streams"
-commit = "latest:refactor_loggable"
+commit = "latest:main"
 ipkg   = "streams.ipkg"
