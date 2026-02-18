@@ -112,7 +112,7 @@ voidRef Document = Document
 voidRef Window   = Window
 
 ||| Adds a unique ID to the given list of attributes if it does not yet
-||| already have an ID attribute, andreturns the updated list plus the ID.
+||| already have an ID attribute, and returns the updated list plus the ID.
 export
 attributesWithID :
      {auto lio : LIO io}
@@ -237,6 +237,19 @@ parameters {auto ff : Functor f}
 ||| An editor and its corresponding widgets can be something simple like a
 ||| text input field or a `<select>` element, or it can be highly complex
 ||| like a canvas and a group of DOM elements for editing molecules.
+|||
+||| A couple of notes about how an editor is supposed to behave:
+|||   * If the initial value used for creating the widget is a `Nothing`,
+|||     the stream of values produced by the widget *may* already hold
+|||     a valid default value. In case no sensible default is available,
+|||     the stream's initial value *should* be `Missing`.
+|||   * If the initial value used for creating the widget is a `Just`,
+|||     the stream of values produced by the widget *must* emit a `Valid`
+|||     wrapping the provided initial value as its first output.
+|||
+||| The above two rules make sure an editor behaves as expected, especially
+||| when combining several editors in a form, or using the experimental
+||| `bindEd` combinator.
 public export
 record Editor (t : Type) where
   constructor E
@@ -290,3 +303,39 @@ selEdit :
   -> (attrs   : List (Attribute Select))
   -> Editor t
 selEdit vs = E . sel id interpolate vs
+
+noID : Attributes t -> Attributes t
+noID =
+  mapMaybe $ \case
+    Id _ => Nothing
+    a    => Just a
+
+setID : DomID -> HTMLNode -> HTMLNode
+setID i (El tpe xs ys) = El tpe (ref i :: noID xs) ys
+setID i (EEl tpe xs)   = EEl tpe (ref i :: noID xs)
+setID i n = n
+
+export
+bindEd :
+     {0 a,b : Type}
+  -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
+  -> (a -> Editor b)
+  -> (Maybe b -> a)
+  -> Editor a
+  -> Editor b
+bindEd wrap f fromB (E w) =
+  E $ \mb => Prelude.do
+    i       <- uniqueID
+    W na as <- w (Just $ fromB mb)
+    W nb bs <- widget (f $ fromB mb) mb
+    pure $ W (wrap na $ setID i nb) $
+      switchMap id $ cons bs (P.mapOutput (adj i) as)
+
+  where
+    adj : DomID -> EditRes a -> JSStream (EditRes b)
+    adj i Missing     = emit Missing
+    adj i (Invalid x) = emit (Invalid x)
+    adj i (Valid va)  = Prelude.do
+      W nb bs <- exec $ widget (f va) Nothing
+      exec $ replace (elemRef i) (setID i nb)
+      bs
