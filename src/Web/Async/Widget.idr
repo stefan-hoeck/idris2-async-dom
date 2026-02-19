@@ -329,7 +329,7 @@ bindEd wrap f fromB (E w) =
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
     pure $ W (wrap na $ setID i nb) $
-      switchMap id $ cons bs (P.evalMap (adj i) $ P.tail as)
+      observe' (putStrLn "bindEd outer changed") $ switchMap id $ cons bs (P.evalMap (adj i) $ P.tail as)
 
   where
     adj : DomID -> EditRes a -> Act (JSStream (EditRes b))
@@ -339,4 +339,4 @@ bindEd wrap f fromB (E w) =
       putStrLn "bindEd inner changed"
       W nb xs <- widget (f va) Nothing
       replace (elemRef i) (setID i nb)
-      pure (observe' (putStrLn "bindEd outer changed") xs)
+      pure xs
