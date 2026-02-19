@@ -336,6 +336,7 @@ bindEd wrap f fromB (E w) =
     adj i Missing     = pure $ emit Missing
     adj i (Invalid x) = pure $ emit (Invalid x)
     adj i (Valid va)  = Prelude.do
-      W nb bs <- widget (f va) Nothing
+      putStrLn "bindEd inner changed"
+      W nb xs <- widget (f va) Nothing
       replace (elemRef i) (setID i nb)
-      pure bs
+      pure (observe' (putStrLn "bindEd outer changed") xs)
