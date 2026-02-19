@@ -329,9 +329,9 @@ bindEd wrap f fromB (E w) =
     i       <- uniqueID
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
-    ref     <- newref (Just $ endWithNothing ms bs)
     pure $ W (wrap na $ setID i nb) $
-      observe' (putStrLn "bindEd outer changed") $ switchMap id $ P.evalMap (adj ms i ref) as
+      switchMap id $
+        cons (endWithNothing ms bs) $ P.evalMap (adj ms i) (P.tail as)
 
   where
     endWithNothing : JSStream (Maybe t) -> JSStream t -> JSStream t
@@ -341,17 +341,12 @@ bindEd wrap f fromB (E w) =
          {auto snk : Sink (Maybe $ EditRes b)}
       -> JSStream (Maybe $ EditRes b)
       -> DomID
-      -> IORef (Maybe $ JSStream (EditRes b))
       -> EditRes a
       -> Act (JSStream (EditRes b))
-    adj ms i ref Missing     = sink (the (Maybe $ EditRes b) Nothing) $> emit Missing
-    adj ms i ref (Invalid x) = sink (the (Maybe $ EditRes b) Nothing) $> emit (Invalid x)
-    adj ms i ref (Valid va)  = Prelude.do
+    adj ms i Missing     = sink (the (Maybe $ EditRes b) Nothing) $> emit Missing
+    adj ms i (Invalid x) = sink (the (Maybe $ EditRes b) Nothing) $> emit (Invalid x)
+    adj ms i (Valid va)  = Prelude.do
       sink (the (Maybe $ EditRes b) Nothing)
-      readref ref >>= \case
-        Just bs => writeref ref Nothing $> bs
-        Nothing => Prelude.do
-          putStrLn "bindEd inner changed"
-          W nb xs <- widget (f va) Nothing
-          replace (elemRef i) (setID i nb)
-          pure (endWithNothing ms xs)
+      W nb xs <- widget (f va) Nothing
+      replace (elemRef i) (setID i nb)
+      pure (endWithNothing ms xs)
