@@ -329,13 +329,13 @@ bindEd wrap f fromB (E w) =
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
     pure $ W (wrap na $ setID i nb) $
-      switchMap id $ cons bs (P.tail $ P.mapOutput (adj i) as)
+      switchMap id $ cons bs (P.tail $ P.evalMap (adj i) as)
 
   where
-    adj : DomID -> EditRes a -> JSStream (EditRes b)
-    adj i Missing     = emit Missing
-    adj i (Invalid x) = emit (Invalid x)
+    adj : DomID -> EditRes a -> Act (JSStream (EditRes b))
+    adj i Missing     = pure $ emit Missing
+    adj i (Invalid x) = pure $ emit (Invalid x)
     adj i (Valid va)  = Prelude.do
-      W nb bs <- exec $ widget (f va) Nothing
-      exec $ replace (elemRef i) (setID i nb)
-      bs
+      W nb bs <- widget (f va) Nothing
+      replace (elemRef i) (setID i nb)
+      pure bs
