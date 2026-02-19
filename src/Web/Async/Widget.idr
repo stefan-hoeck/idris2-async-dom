@@ -329,7 +329,7 @@ bindEd wrap f fromB (E w) =
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
     pure $ W (wrap na $ setID i nb) $
-      switchMap id $ cons bs (P.mapOutput (adj i) as)
+      switchMap id $ cons bs (P.tail $ P.mapOutput (adj i) as)
 
   where
     adj : DomID -> EditRes a -> JSStream (EditRes b)
