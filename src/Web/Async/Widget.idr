@@ -11,6 +11,7 @@ import Web.Async.View
 
 %default total
 %language ElabReflection
+%hide Text.HTML.Node.a
 
 --------------------------------------------------------------------------------
 -- EditRes
@@ -317,36 +318,24 @@ setID i n = n
 
 export
 bindEd :
-     {0 a,b : Type}
-  -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
+     (wrap : (fst,snd : HTMLNode) -> HTMLNode)
   -> (a -> Editor b)
   -> (Maybe b -> a)
   -> Editor a
   -> Editor b
 bindEd wrap f fromB (E w) =
   E $ \mb => Prelude.do
-    E ms    <- event (Maybe $ EditRes b)
     i       <- uniqueID
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
     pure $ W (wrap na $ setID i nb) $
-      switchMap id $
-        cons (endWithNothing ms bs) $ P.evalMap (adj ms i) (P.tail as)
+      switchMap id $ cons bs $ P.evalMap (adj i) (P.tail as)
 
   where
-    endWithNothing : JSStream (Maybe t) -> JSStream t -> JSStream t
-    endWithNothing m vs = P.catMaybes $ merge [m, P.mapOutput Just vs]
-
-    adj :
-         {auto snk : Sink (Maybe $ EditRes b)}
-      -> JSStream (Maybe $ EditRes b)
-      -> DomID
-      -> EditRes a
-      -> Act (JSStream (EditRes b))
-    adj ms i Missing     = sink (the (Maybe $ EditRes b) Nothing) $> emit Missing
-    adj ms i (Invalid x) = sink (the (Maybe $ EditRes b) Nothing) $> emit (Invalid x)
-    adj ms i (Valid va)  = Prelude.do
-      sink (the (Maybe $ EditRes b) Nothing)
+    adj : DomID -> EditRes a -> Act (JSStream (EditRes b))
+    adj i Missing     = pure $ emit Missing
+    adj i (Invalid x) = pure $ emit (Invalid x)
+    adj i (Valid va)  = Prelude.do
       W nb xs <- widget (f va) Nothing
       replace (elemRef i) (setID i nb)
-      pure (endWithNothing ms xs)
+      pure xs
