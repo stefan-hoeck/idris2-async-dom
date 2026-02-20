@@ -11,6 +11,7 @@ import Web.Async.View
 
 %default total
 %language ElabReflection
+%hide Text.HTML.Node.a
 
 --------------------------------------------------------------------------------
 -- EditRes
@@ -256,6 +257,17 @@ record Editor (t : Type) where
   ||| Create a node and stream of values from an optional initial value.
   widget : Maybe t -> Act (Widget $ EditRes t)
 
+export
+adjEditor :
+     (Maybe a -> Maybe b)
+  -> (EditRes b -> EditRes a)
+  -> Editor b
+  -> Editor a
+adjEditor adjm adjres ed =
+  E $ \mb => Prelude.do
+    W n bs <- ed.widget (adjm mb)
+    pure $ W n $ P.mapOutput adjres bs
+
 ||| Views an editor through an isomorphism.
 export
 editI : Iso' t1 t2 -> Editor t1 -> Editor t2
@@ -317,8 +329,7 @@ setID i n = n
 
 export
 bindEd :
-     {0 a,b : Type}
-  -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
+     (wrap : (fst,snd : HTMLNode) -> HTMLNode)
   -> (a -> Editor b)
   -> (Maybe b -> a)
   -> Editor a
@@ -343,10 +354,10 @@ bindEd wrap f fromB (E w) =
       -> DomID
       -> EditRes a
       -> Act (JSStream (EditRes b))
-    adj ms i Missing     = sink (the (Maybe $ EditRes b) Nothing) $> emit Missing
-    adj ms i (Invalid x) = sink (the (Maybe $ EditRes b) Nothing) $> emit (Invalid x)
+    adj ms i Missing     = sinkTo snk Nothing $> emit Missing
+    adj ms i (Invalid x) = sinkTo snk Nothing $> emit (Invalid x)
     adj ms i (Valid va)  = Prelude.do
-      sink (the (Maybe $ EditRes b) Nothing)
+      sinkTo snk Nothing
       W nb xs <- widget (f va) Nothing
       replace (elemRef i) (setID i nb)
       pure (endWithNothing ms xs)
