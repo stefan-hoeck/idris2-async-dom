@@ -336,28 +336,20 @@ bindEd :
   -> Editor b
 bindEd wrap f fromB (E w) =
   E $ \mb => Prelude.do
-    E ms    <- event (Maybe $ EditRes b)
+    E ms    <- event ()
     i       <- uniqueID
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb
     pure $ W (wrap na $ setID i nb) $
       switchMap id $
-        cons (endWithNothing ms bs) $ P.evalMap (adj ms i) (P.tail as)
+        cons (haltOn ms bs) $ P.evalMap (adj (P.tail ms) i) (P.tail as)
 
   where
-    endWithNothing : JSStream (Maybe t) -> JSStream t -> JSStream t
-    endWithNothing m vs = P.catMaybes $ merge [m, P.mapOutput Just vs]
-
-    adj :
-         {auto snk : Sink (Maybe $ EditRes b)}
-      -> JSStream (Maybe $ EditRes b)
-      -> DomID
-      -> EditRes a
-      -> Act (JSStream (EditRes b))
-    adj ms i Missing     = sinkTo snk Nothing $> emit Missing
-    adj ms i (Invalid x) = sinkTo snk Nothing $> emit (Invalid x)
+    adj : Sink () => JSStream () -> DomID -> EditRes a -> Act (JSStream (EditRes b))
+    adj ms i Missing     = sink () $> emit Missing
+    adj ms i (Invalid x) = sink () $> emit (Invalid x)
     adj ms i (Valid va)  = Prelude.do
-      sinkTo snk Nothing
+      sink ()
       W nb xs <- widget (f va) Nothing
       replace (elemRef i) (setID i nb)
-      pure (endWithNothing ms xs)
+      pure (haltOn ms xs)
