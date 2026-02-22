@@ -34,6 +34,11 @@ toEither (Invalid s) = Left s
 toEither _           = Right ()
 
 export
+toMaybe : EditRes t -> Maybe t
+toMaybe (Valid v) = Just v
+toMaybe _         = Nothing
+
+export
 isValid : EditRes t -> Bool
 isValid (Valid _) = True
 isValid _         = False
@@ -86,6 +91,21 @@ empty = W Empty (pure ())
 export
 once : t -> Widget t
 once = W Empty . emit
+
+||| Adjusts a widget in such a way that its input streams ends
+||| as soon as its node is removed from the DOM.
+|||
+||| This is used in utilities such as `bindEd` or `Web.Async.List`, where
+||| external events decide when a node is removed from the UI.
+export
+endOnRemove : Widget t -> JS es (Widget t)
+endOnRemove (W (El t as ns) es) = Prelude.do
+  E end <- event ()
+  pure $ W (El t (onRemove () :: as) ns) (haltOn end es)
+endOnRemove (W (EEl t as) es) = Prelude.do
+  E end <- event ()
+  pure $ W (EEl t $ onRemove () :: as) (haltOn end es)
+endOnRemove w = pure w
 
 export
 Functor Widget where
@@ -336,20 +356,16 @@ bindEd :
   -> Editor b
 bindEd wrap f fromB (E w) =
   E $ \mb => Prelude.do
-    E ms    <- event ()
     i       <- uniqueID
     W na as <- w (Just $ fromB mb)
-    W nb bs <- widget (f $ fromB mb) mb
+    W nb bs <- widget (f $ fromB mb) mb >>= endOnRemove
     pure $ W (wrap na $ setID i nb) $
-      switchMap id $
-        cons (haltOn ms bs) $ P.evalMap (adj (P.tail ms) i) (P.tail as)
+      switchMap id $ cons bs $
+        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj i)
 
   where
-    adj : Sink () => JSStream () -> DomID -> EditRes a -> Act (JSStream (EditRes b))
-    adj ms i Missing     = sink () $> emit Missing
-    adj ms i (Invalid x) = sink () $> emit (Invalid x)
-    adj ms i (Valid va)  = Prelude.do
-      sink ()
-      W nb xs <- widget (f va) Nothing
+    adj : DomID -> a -> Act (JSStream (EditRes b))
+    adj i va  = Prelude.do
+      W nb xs <- widget (f va) Nothing >>= endOnRemove
       replace (elemRef i) (setID i nb)
-      pure (haltOn ms xs)
+      pure xs
