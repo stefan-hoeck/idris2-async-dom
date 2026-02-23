@@ -55,6 +55,11 @@ nodeIf : Bool -> Lazy HTMLNode -> HTMLNode
 nodeIf True n  = n
 nodeIf False _ = Empty
 
+||| Converts an optional value to a `HTMLNode`
+export %inline
+nodeMaybe : (a -> HTMLNode) -> Maybe a -> HTMLNode
+nodeMaybe f = maybe Empty f
+
 ||| Prepend a non-event attribute to a node's list of attributes.
 export
 withAttribute : ({0 s : _} -> {0 t : HTMLTag s} -> Attribute t) -> HTMLNode -> HTMLNode
