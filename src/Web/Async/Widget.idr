@@ -336,16 +336,20 @@ selEdit :
   -> Editor t
 selEdit vs = E . sel id interpolate vs
 
-noID : Attributes t -> Attributes t
-noID =
-  mapMaybe $ \case
-    Id _ => Nothing
-    a    => Just a
+withID :
+     {s : _}
+  -> {0 t : HTMLTag s}
+  -> Attributes t
+  -> JS es (DomID, Attributes t)
+withID xs =
+  case attrID xs of
+    Just (Id i) => pure (D i, xs)
+    Nothing     => map (\i => (i, ref i :: xs)) uniqueID
 
-setID : DomID -> HTMLNode -> HTMLNode
-setID i (El tpe xs ys) = El tpe (ref i :: noID xs) ys
-setID i (EEl tpe xs)   = EEl tpe (ref i :: noID xs)
-setID i n = n
+setID : HTMLNode -> JS es (DomID, HTMLNode)
+setID (El tpe xs ys) = map (\(i,xs2) => (i, El tpe xs2 ys)) (withID xs)
+setID (EEl tpe xs)   = map (\(i,xs2) => (i, EEl tpe xs2)) (withID xs)
+setID n              = map (\i => (i, div [ref i] [n])) uniqueID
 
 export
 bindEd :
@@ -356,16 +360,20 @@ bindEd :
   -> Editor b
 bindEd wrap f fromB (E w) =
   E $ \mb => Prelude.do
-    i       <- uniqueID
     W na as <- w (Just $ fromB mb)
     W nb bs <- widget (f $ fromB mb) mb >>= endOnRemove
-    pure $ W (wrap na $ setID i nb) $
+    (i,nb2)  <- setID nb
+    ref      <- newref i
+    pure $ W (wrap na nb2) $
       switchMap id $ cons bs $
-        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj i)
+        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj ref)
 
   where
-    adj : DomID -> a -> Act (JSStream (EditRes b))
-    adj i va  = Prelude.do
-      W nb xs <- widget (f va) Nothing >>= endOnRemove
-      replace (elemRef i) (setID i nb)
+    adj : IORef DomID -> a -> Act (JSStream (EditRes b))
+    adj iref va  = Prelude.do
+      W nb xs  <- widget (f va) Nothing >>= endOnRemove
+      (i2,nb2) <- setID nb
+      i        <- readref iref
+      replace (elemRef i) nb2
+      writeref iref i2
       pure xs
