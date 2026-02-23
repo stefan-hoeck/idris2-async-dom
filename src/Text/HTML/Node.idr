@@ -55,22 +55,30 @@ nodeIf : Bool -> Lazy HTMLNode -> HTMLNode
 nodeIf True n  = n
 nodeIf False _ = Empty
 
+||| Converts an optional value to a `HTMLNode`
+export %inline
+nodeMaybe : (a -> HTMLNode) -> Maybe a -> HTMLNode
+nodeMaybe f = maybe Empty f
+
 ||| Prepend a non-event attribute to a node's list of attributes.
 export
 withAttribute : ({0 s : _} -> {0 t : HTMLTag s} -> Attribute t) -> HTMLNode -> HTMLNode
 withAttribute a (El tp as ns) = El tp (a ::as) ns
+withAttribute a (EEl tp as)   = EEl tp (a ::as)
 withAttribute a n             = n
 
 ||| Prepend the given ID to a node's list of attributes.
 export
 withId : String -> HTMLNode -> HTMLNode
 withId s (El tp as ns) = El tp (Id (Id s) :: as) ns
+withId s (EEl tp as)   = EEl tp (Id (Id s) :: as)
 withId s n             = n
 
 ||| Prepend the given event to a node's list of attributes.
 export
 withEv : Sink e => DOMEvent e -> HTMLNode -> HTMLNode
 withEv ev (El tp as ns) = El tp (Event ev :: as) ns
+withEv ev (EEl tp as)   = EEl tp (Event ev :: as)
 withEv ev n             = n
 
 export %inline
