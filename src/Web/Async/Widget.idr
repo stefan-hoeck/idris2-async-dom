@@ -74,6 +74,10 @@ record Widget e where
   node   : HTMLNode
   events : JSStream e
 
+export
+adjNode : (HTMLNode -> HTMLNode) -> Widget e -> Widget e
+adjNode f = {node $= f}
+
 ||| A dummy widget without a node representation that keeps
 ||| producing the given value.
 export
@@ -336,44 +340,29 @@ selEdit :
   -> Editor t
 selEdit vs = E . sel id interpolate vs
 
-withID :
-     {s : _}
-  -> {0 t : HTMLTag s}
-  -> Attributes t
-  -> JS es (DomID, Attributes t)
-withID xs =
-  case attrID xs of
-    Just (Id i) => pure (D i, xs)
-    Nothing     => map (\i => (i, ref i :: xs)) uniqueID
-
-setID : HTMLNode -> JS es (DomID, HTMLNode)
-setID (El tpe xs ys) = map (\(i,xs2) => (i, El tpe xs2 ys)) (withID xs)
-setID (EEl tpe xs)   = map (\(i,xs2) => (i, EEl tpe xs2)) (withID xs)
-setID n              = map (\i => (i, div [ref i] [n])) uniqueID
-
 export
 bindEd :
-     (wrap : (fst,snd : HTMLNode) -> HTMLNode)
+     (cls  : Class)
+  -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
   -> (a -> Editor b)
   -> (Maybe b -> a)
   -> Editor a
   -> Editor b
-bindEd wrap f fromB (E w) =
+bindEd cls wrap f fromB (E w) =
   E $ \mb => Prelude.do
+    i       <- uniqueID
     W na as <- w (Just $ fromB mb)
-    W nb bs <- widget (f $ fromB mb) mb >>= endOnRemove
-    (i,nb2)  <- setID nb
-    ref      <- newref i
-    pure $ W (wrap na nb2) $
+    W nb bs <- widget (f $ fromB mb) mb >>= wdgt i
+    pure $ W (wrap na nb) $
       switchMap id $ cons bs $
-        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj ref)
+        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj i)
 
   where
-    adj : IORef DomID -> a -> Act (JSStream (EditRes b))
-    adj iref va  = Prelude.do
-      W nb xs  <- widget (f va) Nothing >>= endOnRemove
-      (i2,nb2) <- setID nb
-      i        <- readref iref
-      replace (elemRef i) nb2
-      writeref iref i2
+    wdgt : {0 t : _} -> DomID -> Widget t -> Act (Widget t)
+    wdgt i = endOnRemove . adjNode (\n => div [ref i, class cls] [n])
+
+    adj : DomID -> a -> Act (JSStream (EditRes b))
+    adj i va  = Prelude.do
+      W nb xs  <- widget (f va) Nothing >>= wdgt i
+      replace (elemRef i) nb
       pure xs
