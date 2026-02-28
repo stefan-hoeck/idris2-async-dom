@@ -57,3 +57,11 @@ confirmed1 :
   -> Maybe e
   -> Act (Widget $ Maybe e)
 confirmed1 wrap ed = map {events $= take 1} . confirmed wrap ed
+
+export
+keyConfirmed : Editor e -> Maybe e -> Act (Widget $ Maybe e)
+keyConfirmed =
+  confirmed $ \n => Prelude.do
+    E es <- event {fs = [JSErr]} ConfirmEv
+    let n2 := withAttributes [onEscDown Confirm.Cancel, onEnterDown OK] n
+    pure (neutral, W n2 es)

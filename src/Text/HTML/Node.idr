@@ -60,12 +60,23 @@ export %inline
 nodeMaybe : (a -> HTMLNode) -> Maybe a -> HTMLNode
 nodeMaybe f = maybe Empty f
 
-||| Prepend a non-event attribute to a node's list of attributes.
+||| Prepend a list of attributes to a node's list of attributes.
 export
-withAttribute : ({0 s : _} -> {0 t : HTMLTag s} -> Attribute t) -> HTMLNode -> HTMLNode
-withAttribute a (El tp as ns) = El tp (a ::as) ns
-withAttribute a (EEl tp as)   = EEl tp (a ::as)
-withAttribute a n             = n
+withAttributes :
+     ({0 s : _} -> {0 t : HTMLTag s} -> List (Attribute t))
+  -> HTMLNode
+  -> HTMLNode
+withAttributes a (El tp as ns) = El tp (a ++ as) ns
+withAttributes a (EEl tp as)   = EEl tp (a ++ as)
+withAttributes a n             = n
+
+||| Prepend an attribute to a node's list of attributes.
+export %inline
+withAttribute :
+     ({0 s : _} -> {0 t : HTMLTag s} -> Attribute t)
+  -> HTMLNode
+  -> HTMLNode
+withAttribute a = withAttributes [a]
 
 ||| Prepend the given ID to a node's list of attributes.
 export
