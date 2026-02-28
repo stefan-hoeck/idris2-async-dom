@@ -1,5 +1,6 @@
 module Web.Async.Util
 
+import Web.Async.Event
 import Web.Internal.Types
 import public FS
 import public FS.Concurrent.Signal
@@ -109,6 +110,9 @@ prim__writeToClipboard : String -> PrimIO ()
 
 %foreign "browser:lambda:(f,w) => navigator.clipboard.readText().then(s => f(s)(w))"
 prim__readFromClipboard : (String -> PrimIO ()) -> PrimIO ()
+
+%foreign "browser:lambda:(e,w) => e.getBoundingClientRect()"
+prim__getBoundingClientRect : Element -> PrimIO DOMRect
 
 --------------------------------------------------------------------------------
 --          Core Utilities
@@ -397,3 +401,13 @@ parameters (ev  : e)
   mvc : (e -> s -> s) -> (Sink e => e -> s -> Act ()) -> JSStream Void
   mvc upd disp =
     mvcAct (\v,x => let y := upd v x in disp v y $> y)
+
+--------------------------------------------------------------------------------
+--          Geometry
+--------------------------------------------------------------------------------
+
+export
+getClientRect : LIO f => Element -> f Rect
+getClientRect el = Prelude.do
+  r <- lift1 $ ffi (prim__getBoundingClientRect el)
+  lift1 (toRect r)
