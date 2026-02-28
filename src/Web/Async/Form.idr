@@ -30,7 +30,7 @@ formStream ws ini = merge (map events ws) |> scanFrom1 ini
 parameters {0 f        : Type}
            {auto ipf   : Interpolation f}
            (0 rec      : (f -> Type) -> Type)
-           (formNode   : List FormField -> Act HTMLNode)
+           (formNode   : List FormField -> HTMLNode)
            {0 g        : f -> Type}
            {auto sings : rec Singleton}
            {auto fuc   : FunctorB f rec}
@@ -97,15 +97,15 @@ parameters {0 f        : Type}
          recw   <- btraverse (flip apply recm) eflds
 
          -- extract the editor triples as a list for
-         let ws := bfoldMap (Prelude.Lin:<) recw <>> []
+         let ws   := bfoldMap (Prelude.Lin:<) recw <>> []
 
          -- group the editing fields in a single HTML node
-         node   <- formNode (mapMaybe toField ws)
+             node := formNode (mapMaybe toField ws)
 
          pure $ W node (formStream (map snd ws) missAll |> mapOutput bsequence)
 
 parameters {0 ts       : List Type}
-           (formNode   : List HTMLNode -> Act HTMLNode)
+           (formNode   : List HTMLNode -> HTMLNode)
            {auto els   : All (`Elem` ts) ts}
 
   0 HForm : Type
@@ -142,9 +142,9 @@ parameters {0 ts       : List Type}
          -- them to the optional initial record `recm`
          recw   <- hsequence $ mapProperty (flip apply recm) eflds
 
-         let ws := hfoldMap (Prelude.Lin:<) recw <>> []
+         let ws   := hfoldMap (Prelude.Lin:<) recw <>> []
 
          -- group the editing fields in a single HTML node
-         node   <- formNode (map node ws)
+             node := formNode (map node ws)
 
          pure $ W node (formStream ws miss |> mapOutput hsequence)
