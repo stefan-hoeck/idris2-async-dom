@@ -1,6 +1,7 @@
 module Web.Async.Confirm
 
 import Derive.Prelude
+import Text.HTML.DomID
 import Web.Async
 import Web.Async.Form
 
@@ -65,3 +66,25 @@ keyConfirmed =
     E es <- event {fs = [JSErr]} ConfirmEv
     let n2 := withAttributes [onEscDown Confirm.Cancel, onEnterDown OK] n
     pure (neutral, W n2 es)
+
+export
+cleanupDialog : DomID -> Act ()
+cleanupDialog d =
+  let ref := elemRef d
+   in children ref [] >> dialogClose ref
+
+export
+confirmedModal :
+     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
+  -> DomID
+  -> Editor e
+  -> Maybe e
+  -> Act (JSStream $ Maybe e)
+confirmedModal wrap d ed m = Prelude.do
+  let ref := elemRef d
+  W n evs <- confirmed wrap ed m
+  child ref n
+  showModal ref
+  pure $ flip observe evs $ \case
+    Nothing => cleanupDialog d
+    _       => pure ()
