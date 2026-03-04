@@ -114,6 +114,15 @@ prim__readFromClipboard : (String -> PrimIO ()) -> PrimIO ()
 %foreign "browser:lambda:(e,w) => e.getBoundingClientRect()"
 prim__getBoundingClientRect : Element -> PrimIO DOMRect
 
+%foreign "browser:lambda:(e,w) => e.show()"
+prim__dialogShow : HTMLDialogElement -> PrimIO ()
+
+%foreign "browser:lambda:(e,w) => e.close()"
+prim__dialogClose : HTMLDialogElement -> PrimIO ()
+
+%foreign "browser:lambda:(e,w) => e.showModal()"
+prim__showModal : HTMLDialogElement -> PrimIO ()
+
 --------------------------------------------------------------------------------
 --          Core Utilities
 --------------------------------------------------------------------------------
@@ -237,6 +246,21 @@ readFromClipboard : Async e es String
 readFromClipboard =
   primAsync_ $ \cb =>
     ffi $ prim__readFromClipboard (\s => primRun (cb $ Right s))
+
+||| Show the given dialog element
+export %inline
+dialogShow : HasIO io => HTMLDialogElement -> io ()
+dialogShow el = primIO (prim__dialogShow el)
+
+||| Close the given dialog element
+export %inline
+dialogClose : HasIO io => HTMLDialogElement -> io ()
+dialogClose el = primIO (prim__dialogClose el)
+
+||| Show the given dialog element in "modal" mode
+export %inline
+showModal : HasIO io => HTMLDialogElement -> io ()
+showModal el = primIO (prim__showModal el)
 
 --------------------------------------------------------------------------------
 --          Type Computations

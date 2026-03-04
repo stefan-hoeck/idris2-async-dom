@@ -332,6 +332,21 @@ parameters {auto has : Has JSErr es}
   blur : Ref t -> JS es ()
   blur r = castElementByRef {t = HTMLElement} r >>= blur
 
+  ||| Show the given dialog element.
+  export %inline
+  dialogShow : Ref t -> JS es ()
+  dialogShow r = castElementByRef {t = HTMLDialogElement} r >>= dialogShow
+
+  ||| Show the given dialog element in "modal" mode.
+  export %inline
+  showModal : Ref t -> JS es ()
+  showModal r = castElementByRef {t = HTMLDialogElement} r >>= showModal
+
+  ||| Close the given dialog element.
+  export %inline
+  dialogClose : Ref t -> JS es ()
+  dialogClose r = castElementByRef {t = HTMLDialogElement} r >>= dialogClose
+
 --------------------------------------------------------------------------------
 -- Utils with error handling
 --------------------------------------------------------------------------------
