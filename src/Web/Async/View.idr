@@ -86,6 +86,7 @@ registerDOMEvent prev stop el de =
     KeyUp f      => inst "keyup" keyInfo f
     Blur v       => inst "blur" {t = Event} (const $ pure v) Just
     Focus v      => inst "focus" {t = Event} (const $ pure v) Just
+    Close v      => inst "close" {t = Event} (const $ pure v) Just
     MouseDown f  => inst "mousedown" mouseInfo f
     MouseUp f    => inst "mouseup" mouseInfo f
     MouseEnter f => inst "mouseenter" mouseInfo f
