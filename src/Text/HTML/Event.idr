@@ -124,6 +124,7 @@ data DOMEvent : Type -> Type where
 
   -- DOM Changes
   Remove     : a -> DOMEvent a
+  Close      : a -> DOMEvent a
 
 export
 Functor DOMEvent where
@@ -147,3 +148,4 @@ Functor DOMEvent where
   map f (Wheel g)      = Wheel (map f . g)
   map f (Resize g)     = Resize (map f . g)
   map f (Remove x)     = Remove (f x)
+  map f (Close x)      = Close (f x)

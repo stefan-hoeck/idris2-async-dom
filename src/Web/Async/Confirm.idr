@@ -83,7 +83,7 @@ confirmedModal :
 confirmedModal wrap d ed m = Prelude.do
   let ref := elemRef d
   W n evs <- confirmed wrap ed m
-  child ref n
+  replace ref n
   showModal ref
   pure $ flip observe evs $ \case
     Nothing => cleanupDialog d

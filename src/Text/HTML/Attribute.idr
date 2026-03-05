@@ -511,3 +511,7 @@ parameters {auto sink : Sink ev}
   export
   onRemove : ev -> Attribute t
   onRemove = Event . Remove
+
+  export
+  onClose : ev -> Attribute t
+  onClose = Event . Close
