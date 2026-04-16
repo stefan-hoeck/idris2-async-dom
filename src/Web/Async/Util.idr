@@ -108,6 +108,12 @@ prim__time : PrimIO Integer
 %foreign "browser:lambda:(s,w) => navigator.clipboard.writeText(s)"
 prim__writeToClipboard : String -> PrimIO ()
 
+%foreign "browser:lambda:(i,w) => navigator.clipboard.write([i])"
+prim__itemToClipboard : ClipboardItem -> PrimIO (Promise ())
+
+%foreign "browser:lambda:(m,s,w) => new ClipboardItem({[m]: s})"
+prim__clipboardItem : (mimeType, content : String) -> PrimIO ClipboardItem
+
 %foreign "browser:lambda:(f,w) => navigator.clipboard.readText().then(s => f(s)(w))"
 prim__readFromClipboard : (String -> PrimIO ()) -> PrimIO ()
 
@@ -236,6 +242,23 @@ timed' = map snd . timed
 export %inline
 toClipboard : HasIO io => String -> io ()
 toClipboard s = primIO (prim__writeToClipboard s)
+
+||| Writes a `ClipboardItem` to the clipboard.
+export
+itemToClipboard : Elem JSErr es => ClipboardItem -> Async JS es ()
+itemToClipboard ci = do
+  p <- primIO (prim__itemToClipboard ci)
+  promise p
+
+||| Wraps some text data plus its mimetype in a `ClipboardItem`
+export %inline
+clipboardItem : HasIO io => (mimetype, content : String) -> io ClipboardItem
+clipboardItem m s = primIO (prim__clipboardItem m s)
+
+||| Writes some text data plus its mimetype to the clipboard.
+export
+dataToClipboard : Elem JSErr es => (mimetype, content : String) -> Async JS es ()
+dataToClipboard m c = clipboardItem m c >>= itemToClipboard
 
 export
 readFromClipboard1 : HasIO io => (String -> IO1 ()) -> io ()
