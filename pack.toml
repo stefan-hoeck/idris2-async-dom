@@ -20,6 +20,12 @@ url    = "https://github.com/stefan-hoeck/idris2-ref1"
 commit = "latest:main"
 ipkg   = "ref1.ipkg"
 
+[custom.all.array]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-array"
+commit = "latest:main"
+ipkg   = "array.ipkg"
+
 [custom.all.async]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-async"

@@ -1,5 +1,7 @@
 module Web.Async.Util
 
+import Data.Array
+import Data.Vect
 import Web.Async.Event
 import Web.Internal.Types
 import public FS
@@ -128,6 +130,15 @@ prim__dialogClose : HTMLDialogElement -> PrimIO ()
 
 %foreign "browser:lambda:(e,w) => e.showModal()"
 prim__showModal : HTMLDialogElement -> PrimIO ()
+
+%foreign "browser:lambda:(p,s,w) => new Blob(p, {type:s})"
+prim__blob : AnyPtr -> String -> PrimIO Blob
+
+%foreign "browser:lambda:(b,w) => URL.createObjectURL(b)"
+prim__blobURL : Blob -> PrimIO String
+
+%foreign "browser:lambda:(u,w) => URL.revokeObjectURL(u)"
+prim__revokeObjectURL : String -> PrimIO ()
 
 --------------------------------------------------------------------------------
 --          Core Utilities
@@ -284,6 +295,57 @@ dialogClose el = primIO (prim__dialogClose el)
 export %inline
 showModal : HasIO io => HTMLDialogElement -> io ()
 showModal el = primIO (prim__showModal el)
+
+--------------------------------------------------------------------------------
+--          Blobs
+--------------------------------------------------------------------------------
+
+public export
+interface ToBlob a where
+  toBlob : a -> AnyPtr
+
+export %inline
+ToBlob (IArray k String) where
+  toBlob = unsafeToPtr
+
+export %inline
+ToBlob (Indexed.Array String) where
+  toBlob (A _ arr) = toBlob arr
+
+export %inline
+ToBlob (List String) where
+  toBlob s = toBlob (arrayL s)
+
+export %inline
+ToBlob String where
+  toBlob s = toBlob $ array [s]
+
+export
+blob : {0 a : _} -> HasIO io =>  ToBlob a => a -> (mimetype : String) -> io Blob
+blob v mimetype = primIO (prim__blob (toBlob v) mimetype)
+
+||| A URL (as a wrapped string) pointing to an object in memory.
+|||
+||| This should be treated as a resource and properly released via `cleanup`.
+export
+record ObjectURL where
+  constructor OU
+  url : String
+
+export %inline
+Resource (Async JS) ObjectURL where
+  cleanup (OU u) = primIO (prim__revokeObjectURL u)
+
+export %inline
+Cast ObjectURL String where cast = url
+
+||| Provides a URL pointing to the given `Blob` object.
+|||
+||| Use `cast` to convert the `ObjectURL` to a `String` and make sure to
+||| release it
+export %inline
+blobURL : HasIO io => Blob -> io ObjectURL
+blobURL b = OU <$> primIO (prim__blobURL b)
 
 --------------------------------------------------------------------------------
 --          Type Computations
