@@ -34,6 +34,9 @@ prim__setCustomValidity : Element -> String -> PrimIO ()
 %foreign "browser:lambda:(x,s,w)=> {x.value = s;}"
 prim__setValue : Element -> String -> PrimIO ()
 
+%foreign "browser:lambda:(x,w)=> x.click()"
+prim__click : HTMLElement -> PrimIO ()
+
 %foreign "browser:lambda:(x,n,w)=>x.replaceChildren(n)"
 prim__replaceChildren : ParentNode -> Node -> PrimIO ()
 
@@ -160,6 +163,11 @@ document = primIO prim__document
 export
 getBody : HasIO io => io (Maybe HTMLElement)
 getBody = nullableToMaybe <$> primIO prim__body
+
+||| Simulates a mouse click on an element.
+export %inline
+click : HasIO io => HTMLElement -> io ()
+click x = primIO (prim__click x)
 
 ||| Replace all children of the given node with a new node.
 export %inline
