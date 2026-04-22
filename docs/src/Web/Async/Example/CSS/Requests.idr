@@ -1,8 +1,10 @@
 module Web.Async.Example.CSS.Requests
 
 import Data.Vect
+import Derive.Prelude
 import public Web.Async.Example.CSS.Core
 
+%language ElabReflection
 %default total
 
 --------------------------------------------------------------------------------
@@ -39,11 +41,7 @@ quoteBtn = "request-quote-btn"
 
 data Tag = Btn | Quot | Info | Dot
 
-AreaTag Tag where
-  showTag Btn  = "Btn"
-  showTag Quot = "Quot"
-  showTag Info = "Info"
-  showTag Dot  = "."
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -57,9 +55,9 @@ css =
               , [Quot, Quot]
               , [Info, Info]
               ]
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 

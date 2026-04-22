@@ -1,7 +1,11 @@
 module Web.Async.Example.CSS.Performance
 
+import Derive.Prelude
 import Data.Vect
 import public Web.Async.Example.CSS.Core
+
+%language ElabReflection
+%default total
 
 --------------------------------------------------------------------------------
 --          IDs
@@ -61,15 +65,7 @@ performanceContent = "performance_content"
 
 data Tag = LBtn | NBtn | BRun | LSum | OSum | Btns | OTme | Dot
 
-AreaTag Tag where
-  showTag LBtn  = "LBtn"
-  showTag NBtn  = "NBtn"
-  showTag BRun  = "BRun"
-  showTag LSum  = "LSum"
-  showTag Btns  = "Btns"
-  showTag OSum  = "OSum"
-  showTag OTme  = "OTme"
-  showTag Dot   = "."
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -84,9 +80,9 @@ css =
               , [OTme, OTme, OTme]
               , [Btns, Btns, Btns]
               ]
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -100,9 +96,9 @@ css =
               , [OTme, OTme, OTme, Btns]
               , [Dot,  Dot,  Dot,  Btns]
               ]
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 

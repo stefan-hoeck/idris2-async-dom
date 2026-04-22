@@ -29,7 +29,7 @@ appName Math  = "Math Game"
 content : Sink App => App -> HTMLNode
 content ini =
   div [ class contentList ]
-      [ div [class pageTitle] ["dom-mvc: Examples"]
+      [ div [class pageTitle] ["async-dom: Examples"]
       , div [class contentHeader]
           [ label [class widgetLabel] ["Choose an Example"]
           , selectFromList values (Just ini) appName id

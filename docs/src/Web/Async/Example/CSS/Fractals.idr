@@ -1,7 +1,11 @@
 module Web.Async.Example.CSS.Fractals
 
 import Data.Vect
+import Derive.Prelude
 import public Web.Async.Example.CSS.Core
+
+%language ElabReflection
+%default total
 
 --------------------------------------------------------------------------------
 --          IDs
@@ -45,14 +49,7 @@ lblDelay = "fractals_lbldelay"
 
 data Tag = LIter | IIter | LDel | IDel | BRun | Fract | Dot
 
-AreaTag Tag where
-  showTag LIter = "LIter"
-  showTag IIter = "IIter"
-  showTag LDel  = "LDel"
-  showTag IDel  = "IDel"
-  showTag BRun  = "BRun"
-  showTag Fract = "Fract"
-  showTag Dot   = "."
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -67,10 +64,9 @@ css =
               , [Dot,   BRun ]
               , [Fract, Fract]
               ]
-
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -84,10 +80,9 @@ css =
               , [Dot,   BRun,  Fract]
               , [Dot,   Dot,   Fract]
               ]
-
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
   , class lblIter [ gridArea LIter ]
@@ -110,9 +105,9 @@ css =
       [ justifySelf     Center
       , gridArea        Fract
       , borderStyle     $ Left Solid
-      , borderWidth     $ Left (px 2)
+      , borderWidth     $ Left 2.px
       , borderColor     $ Left base80
-      , maxWidth        $ px 500
-      , width           $ px 500
+      , maxWidth 500.px
+      , width 500.px
       ]
   ]

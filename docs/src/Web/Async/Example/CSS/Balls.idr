@@ -1,7 +1,11 @@
 module Web.Async.Example.CSS.Balls
 
 import Data.Vect
+import Derive.Prelude
 import public Web.Async.Example.CSS.Core
+
+%language ElabReflection
+%default total
 
 --------------------------------------------------------------------------------
 --          IDs
@@ -37,13 +41,7 @@ lblCount = "balls_lblcount"
 
 data Tag = LNum | INum | BRun | LFPS | Anim | Dot
 
-AreaTag Tag where
-  showTag LNum = "LNum"
-  showTag INum = "INum"
-  showTag BRun = "BRun"
-  showTag LFPS = "LFPS"
-  showTag Anim = "Anim"
-  showTag Dot  = "."
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -59,9 +57,9 @@ css =
               , [Anim, Anim]
               ]
 
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -76,9 +74,9 @@ css =
               , [Dot,  Dot,  Anim]
               ]
 
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -94,9 +92,9 @@ css =
   , ref log [ gridArea LFPS ]
 
   , ref out
-      [ justifySelf     Center
-      , gridArea        Anim
-      , maxWidth        $ px 500
-      , width           $ px 500
+      [ justifySelf Center
+      , gridArea Anim
+      , maxWidth 500.px
+      , width 500.px
       ]
   ]
