@@ -2,7 +2,11 @@
 module Web.Async.Example.CSS.MathGame
 
 import Data.Vect
+import Derive.Prelude
 import public Web.Async.Example.CSS.Core
+
+%language ElabReflection
+%default total
 
 --------------------------------------------------------------------------------
 --          IDs
@@ -68,16 +72,7 @@ lblLang = "mathgame_lbllang"
 
 data Tag = LLan | ILan | OClc | IRes | BChk | ORep | BNew | OPic | Dot
 
-AreaTag Tag where
-  showTag LLan = "LLan"
-  showTag ILan = "ILan"
-  showTag OClc = "OClc"
-  showTag IRes = "IRes"
-  showTag BChk = "BChk"
-  showTag ORep = "ORep"
-  showTag BNew = "BNew"
-  showTag OPic = "OPic"
-  showTag Dot  = "."
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -94,10 +89,9 @@ css =
               , [ORep, ORep]
               , [OPic, OPic]
               ]
-
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -113,10 +107,9 @@ css =
               , [ORep, ORep, OPic]
               , [Dot,  Dot,  OPic]
               ]
-
-          , columnGap           $ px 10
-          , rowGap              $ px 10
-          , padding             $ VH (px 20) (px 10)
+          , columnGap 10.px
+          , rowGap 10.px
+          , padding $ VH 20.px 10.px
           ]
       ]
 
@@ -154,8 +147,8 @@ css =
       [ backgroundSize  $ perc 100
       , justifySelf     Center
       , gridArea        OPic
-      , maxWidth        $ px 500
-      , width           $ px 500
+      , maxWidth 500.px
+      , width 500.px
       ]
 
   , class correct [ color green ]

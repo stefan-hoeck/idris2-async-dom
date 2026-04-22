@@ -2,7 +2,11 @@
 module Web.Async.Example.CSS.Reset
 
 import Data.Vect
+import Derive.Prelude
 import public Web.Async.Example.CSS.Core
+
+%language ElabReflection
+%default total
 
 --------------------------------------------------------------------------------
 --          IDs
@@ -58,15 +62,7 @@ resetBtn = "reset_incbtn"
 
 data Tag = LRes | BRes | LInc | BInc | LDec | BDec | LCnt | OCnt
 
-AreaTag Tag where
-  showTag LRes = "LRes"
-  showTag BRes = "BRes"
-  showTag LInc = "LInc"
-  showTag BInc = "BInc"
-  showTag LDec = "LDec"
-  showTag BDec = "BDec"
-  showTag LCnt = "LCnt"
-  showTag OCnt = "OCnt"
+%runElab derive "Tag" [Show,Eq]
 
 export
 css : List (Rule 1)
@@ -80,10 +76,9 @@ css =
           , [LDec, BDec]
           , [LCnt, OCnt]
           ]
-
-      , columnGap           $ px 10
-      , rowGap              $ px 10
-      , padding             $ VH (px 20) (px 10)
+      , columnGap 10.px
+      , rowGap 10.px
+      , padding $ VH 20.px 10.px
       ]
 
   , class resetLbl  [ gridArea LRes ]
