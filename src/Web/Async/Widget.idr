@@ -8,10 +8,12 @@ import Text.HTML.DomID
 import Text.HTML.Select
 import Web.Async.Util
 import Web.Async.View
+import Web.Internal.Types
 
 %default total
 %language ElabReflection
 %hide Text.HTML.Node.a
+%hide Types.SelectionMode.Select
 
 --------------------------------------------------------------------------------
 -- EditRes
@@ -188,6 +190,16 @@ parameters (tpe      : InputType)
   valIn v f = do
     (r, W n evs) <- textInP v
     pure $ W n (observe (validate r . toEither) (mapOutput f evs))
+
+toFile : InputInfo -> Maybe File
+toFile (MkInputInfo _ [f] _) = Just f
+toFile _                     = Nothing
+
+export
+fileIn : Attributes Tag.Input -> JS es (Widget File)
+fileIn as = do
+  E es   <- event File
+  pure $ W (input $ [type File, Event (Input toFile)] ++ as) es
 
 --------------------------------------------------------------------------------
 -- Select Widgets
