@@ -191,14 +191,14 @@ parameters (tpe      : InputType)
     (r, W n evs) <- textInP v
     pure $ W n (observe (validate r . toEither) (mapOutput f evs))
 
-toFile : InputInfo -> Maybe File
-toFile (MkInputInfo _ [f] _) = Just f
+toFile : InputInfo -> Maybe (EditRes File)
+toFile (MkInputInfo _ [f] _) = Just (Valid f)
 toFile _                     = Nothing
 
 export
-fileIn : Attributes Tag.Input -> JS es (Widget File)
+fileIn : Attributes Tag.Input -> JS es (Widget $ EditRes File)
 fileIn as = do
-  E es   <- event File
+  E es   <- eventFrom Missing
   pure $ W (input $ [type File, Event (Input toFile)] ++ as) es
 
 --------------------------------------------------------------------------------
