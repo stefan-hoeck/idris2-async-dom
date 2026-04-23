@@ -203,15 +203,19 @@ fakeBody s =
     _ :< p => p
     _      => ""
 
-toFile : InputInfo -> Maybe (EditRes FileEv)
-toFile (MkInputInfo p [f] _) = Just (Valid $ FE f (fakeBody p))
+toFile : InputInfo -> Maybe FileEv
+toFile (MkInputInfo p [f] _) = Just (FE f (fakeBody p))
 toFile _                     = Nothing
+
+export
+onFileIn : Sink e => (f : FileEv -> e) -> Attribute Tag.Input
+onFileIn f = Event (Input $ map f . toFile)
 
 export
 fileIn : Attributes Tag.Input -> JS es (Widget $ EditRes FileEv)
 fileIn as = do
   E es   <- eventFrom Missing
-  pure $ W (input $ [type File, Event (Input toFile)] ++ as) es
+  pure $ W (input $ [type File, onFileIn Valid] ++ as) es
 
 --------------------------------------------------------------------------------
 -- Select Widgets
