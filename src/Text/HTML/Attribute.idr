@@ -139,6 +139,14 @@ showAttr : Show a => String -> a -> Attribute t
 showAttr nm = dispAttr nm show
 
 export %inline
+accept : String -> Attribute t
+accept = Str "accept"
+
+export
+acceptAll : List String -> Attribute t
+acceptAll = accept . fastConcat . intersperse ","
+
+export %inline
 accesskey : String -> Attribute t
 accesskey = Str "accesskey"
 
