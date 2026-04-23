@@ -1,6 +1,7 @@
 module Web.Async.Util
 
 import Data.Array
+import Data.Buffer
 import Data.Vect
 import Web.Async.Event
 import Web.Internal.Types
@@ -15,6 +16,9 @@ import public Text.HTML
 --------------------------------------------------------------------------------
 --          FFI
 --------------------------------------------------------------------------------
+
+%foreign "javascript:lambda:x=>x.length"
+prim__buflen : Buffer -> Bits32
 
 %foreign "browser:lambda:(w)=>window"
 prim__window : PrimIO Window
@@ -136,6 +140,9 @@ prim__showModal : HTMLDialogElement -> PrimIO ()
 
 %foreign "browser:lambda:(p,s,w) => new Blob(p, {type:s})"
 prim__blob : AnyPtr -> String -> PrimIO Blob
+
+%foreign "browser:lambda:(b,w) => b.bytes()"
+prim__blobBytes : Blob -> PrimIO (Promise Buffer)
 
 %foreign "browser:lambda:(b,w) => URL.createObjectURL(b)"
 prim__blobURL : Blob -> PrimIO String
@@ -354,6 +361,14 @@ Cast ObjectURL String where cast = url
 export %inline
 blobURL : HasIO io => Blob -> io ObjectURL
 blobURL b = OU <$> primIO (prim__blobURL b)
+
+||| Extracts the bytes from a `Blob`.
+export
+blobBytes : Has JSErr es => Blob -> Async JS es AnyBuffer
+blobBytes b = Prelude.do
+  pbuf <- primIO (prim__blobBytes b)
+  buf  <- promise pbuf
+  pure $ AB (cast $ prim__buflen buf) (unsafeMakeBuffer buf)
 
 --------------------------------------------------------------------------------
 --          Type Computations
