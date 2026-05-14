@@ -12,7 +12,9 @@ depends    = base      >= 0.8.0
            , monocle
            , streams
 
-modules    = Text.HTML
+modules    = Text.CSS.Extra
+
+           , Text.HTML
            , Text.HTML.Attribute
            , Text.HTML.DomID
            , Text.HTML.Event
