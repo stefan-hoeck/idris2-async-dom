@@ -311,7 +311,7 @@ export
 stretchCol : Declarations
 stretchCol = alignItems Stretch :: flexCol
 
-parameters {default 4.px gap : Length}
+parameters {default 0.5.em gap : Length}
 
   export
   flexSepRow : Declarations
