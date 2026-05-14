@@ -271,56 +271,84 @@ export
 flex4 : Declaration
 flex4 = flex "4"
 
-||| Flex container with a default gap between components that
-||| arranges components horizontally.
 export
 flexRow : Declarations
 flexRow = [display Flex, flexDirection Row]
 
-||| Like `flexRow` but aligns items at the start of the
-||| cross axis (vertially)
 export
 startRow : Declarations
 startRow = alignItems Start :: flexRow
 
-||| Like `flexRow` but centers items along the cross axis (vertially)
 export
 centerRow : Declarations
 centerRow = alignItems Center :: flexRow
 
-||| Like `flexRow` but centers items along the cross axis (vertially)
 export
 endRow : Declarations
 endRow = alignItems Center :: flexRow
 
-||| Like `flexRow` but stretches items along the cross axis (vertially)
 export
 stretchRow : Declarations
 stretchRow = alignItems Stretch :: flexRow
 
-||| Flex container with a default gap between components that
-||| arranges components vertically.
 export
-flexColumn : Declarations
-flexColumn = [display Flex, flexDirection Column]
+flexCol : Declarations
+flexCol = [display Flex, flexDirection Column]
 
-||| Like `flexColumn` but aligns items at the start of the
-||| cross axis (horizontally)
 export
-startColumn : Declarations
-startColumn = alignItems Start :: flexColumn
+startCol : Declarations
+startCol = alignItems Start :: flexCol
 
-||| Like `flexColumn` but centers items along the cross axis (horizontally)
 export
-centerColumn : Declarations
-centerColumn = alignItems Center :: flexColumn
+centerCol : Declarations
+centerCol = alignItems Center :: flexCol
 
-||| Like `flexColumn` but centers items along the cross axis (horizontally)
 export
-endColumn : Declarations
-endColumn = alignItems Center :: flexColumn
+endCol : Declarations
+endCol = alignItems Center :: flexCol
 
-||| Like `flexColumn` but stretches items along the cross axis (horizontally)
 export
-stretchColumn : Declarations
-stretchColumn = alignItems Stretch :: flexColumn
+stretchCol : Declarations
+stretchCol = alignItems Stretch :: flexCol
+
+parameters {default 4.px gap : Length}
+
+  export
+  flexSepRow : Declarations
+  flexSepRow = [display Flex, columnGap gap, flexDirection Row]
+
+  export
+  startSepRow : Declarations
+  startSepRow = alignItems Start :: flexSepRow
+
+  export
+  centerSepRow : Declarations
+  centerSepRow = alignItems Center :: flexSepRow
+
+  export
+  endSepRow : Declarations
+  endSepRow = alignItems Center :: flexSepRow
+
+  export
+  stretchSepRow : Declarations
+  stretchSepRow = alignItems Stretch :: flexSepRow
+
+  export
+  flexSepCol : Declarations
+  flexSepCol = [display Flex, columnGap gap, flexDirection Column]
+
+  export
+  startSepCol : Declarations
+  startSepCol = alignItems Start :: flexSepCol
+
+  export
+  centerSepCol : Declarations
+  centerSepCol = alignItems Center :: flexSepCol
+
+  export
+  endSepCol : Declarations
+  endSepCol = alignItems Center :: flexSepCol
+
+  export
+  stretchSepCol : Declarations
+  stretchSepCol = alignItems Stretch :: flexSepCol
