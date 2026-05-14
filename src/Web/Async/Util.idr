@@ -1,6 +1,7 @@
 module Web.Async.Util
 
 import Data.Array
+import Data.ByteString
 import Data.Buffer
 import Data.Vect
 import Web.Async.Event
@@ -150,6 +151,24 @@ prim__blobURL : Blob -> PrimIO String
 %foreign "browser:lambda:(u,w) => URL.revokeObjectURL(u)"
 prim__revokeObjectURL : String -> PrimIO ()
 
+export
+data Reader : Type where [external]
+
+%foreign "browser:lambda:(b,w) => b.stream().getReader()"
+prim__blobReader : Blob -> PrimIO Reader
+
+%foreign "browser:lambda:(r,w) => r.cancel()"
+prim__cancelRead : Reader -> PrimIO ()
+
+%foreign "browser:lambda:(r,w) => r.read()"
+prim__readChunk : Reader -> PrimIO (Promise AnyPtr)
+
+%foreign "browser:lambda:(r) => r.done?1:0"
+prim__isDone : AnyPtr -> Bits8
+
+%foreign "browser:lambda:(r) => new UInt8Array(r.value)"
+prim__buf : AnyPtr -> Buffer
+
 --------------------------------------------------------------------------------
 --          Core Utilities
 --------------------------------------------------------------------------------
@@ -272,9 +291,7 @@ toClipboard s = primIO (prim__writeToClipboard s)
 ||| Writes a `ClipboardItem` to the clipboard.
 export
 itemToClipboard : Elem JSErr es => ClipboardItem -> Async JS es ()
-itemToClipboard ci = do
-  p <- primIO (prim__itemToClipboard ci)
-  promise p
+itemToClipboard ci = primIO (prim__itemToClipboard ci) >>= promise
 
 ||| Wraps some text data plus its mimetype in a `ClipboardItem`
 export %inline
@@ -362,13 +379,13 @@ export %inline
 blobURL : HasIO io => Blob -> io ObjectURL
 blobURL b = OU <$> primIO (prim__blobURL b)
 
+toAnyBuffer : Buffer -> AnyBuffer
+toAnyBuffer b = AB (cast $ prim__buflen b) (unsafeMakeBuffer b)
+
 ||| Extracts the bytes from a `Blob`.
 export
 blobBytes : Has JSErr es => Blob -> Async JS es AnyBuffer
-blobBytes b = Prelude.do
-  pbuf <- primIO (prim__blobBytes b)
-  buf  <- promise pbuf
-  pure $ AB (cast $ prim__buflen buf) (unsafeMakeBuffer buf)
+blobBytes b = primIO (prim__blobBytes b) >>= map toAnyBuffer . promise
 
 --------------------------------------------------------------------------------
 --          Type Computations
@@ -543,3 +560,20 @@ getClientRect : LIO f => Element -> f Rect
 getClientRect el = Prelude.do
   r <- lift1 $ ffi (prim__getBoundingClientRect el)
   lift1 (toRect r)
+
+--------------------------------------------------------------------------------
+--          ByteStreams
+--------------------------------------------------------------------------------
+
+export %inline
+Resource (Async JS) Reader where
+  cleanup r = primIO (prim__cancelRead r)
+
+export
+read : Elem JSErr es => Reader -> Async JS es (Maybe AnyBuffer)
+read r = Prelude.do
+  p <- primIO (prim__readChunk r) >>= promise
+  pure $ case prim__isDone p of
+    1 => Nothing
+    _ => Just $ toAnyBuffer (prim__buf p)
+
