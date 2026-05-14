@@ -335,7 +335,7 @@ parameters {default 0.5.em gap : Length}
 
   export
   flexSepCol : Declarations
-  flexSepCol = [display Flex, columnGap gap, flexDirection Column]
+  flexSepCol = [display Flex, rowGap gap, flexDirection Column]
 
   export
   startSepCol : Declarations
