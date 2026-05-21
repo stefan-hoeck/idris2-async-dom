@@ -313,15 +313,26 @@ record Editor (t : Type) where
   widget : Maybe t -> Act (Widget $ EditRes t)
 
 export
+adjWidget :
+     (Maybe a -> Maybe b)
+  -> (Widget (EditRes b) -> Widget (EditRes a))
+  -> Editor b
+  -> Editor a
+adjWidget adjm adjw ed =
+  E $ \mb => adjw <$> ed.widget (adjm mb)
+
+export %inline
+edNodes : (HTMLNodes -> HTMLNodes) -> Editor t -> Editor t
+edNodes = adjWidget id . adjNodes
+
+export %inline
 adjEditor :
      (Maybe a -> Maybe b)
   -> (EditRes b -> EditRes a)
   -> Editor b
   -> Editor a
-adjEditor adjm adjres ed =
-  E $ \mb => Prelude.do
-    W n bs <- ed.widget (adjm mb)
-    pure $ W n $ P.mapOutput adjres bs
+adjEditor adjm adjres =
+  adjWidget adjm $ {events $= P.mapOutput adjres}
 
 ||| Views an editor through an isomorphism.
 export
