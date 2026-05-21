@@ -69,34 +69,34 @@ Monad EditRes where
 public export
 record Widget e where
   constructor W
-  node   : HTMLNode
+  nodes  : HTMLNodes
   events : JSStream e
 
 export
-adjNode : (HTMLNode -> HTMLNode) -> Widget e -> Widget e
-adjNode f = {node $= f}
+adjNodes : (HTMLNodes -> HTMLNodes) -> Widget e -> Widget e
+adjNodes f = {nodes $= f}
 
 ||| A dummy widget without a node representation that keeps
 ||| producing the given value.
 export
 constant : t -> Widget t
-constant = W Empty . fill
+constant = W [] . fill
 
 ||| A dummy widget without a node representation that
 ||| never fires an event.
 export
 empty : Widget t
-empty = W Empty (pure ())
+empty = W [] (pure ())
 
 ||| A dummy widget without a node representation that
 ||| fires the given event exactly once.
 export
 once : t -> Widget t
-once = W Empty . emit
+once = W [] . emit
 
 export
 Functor Widget where
-  map f (W n p) = W n $ mapOutput f p
+  map f (W ns p) = W ns $ mapOutput f p
 
 --------------------------------------------------------------------------------
 -- File Input
@@ -151,15 +151,25 @@ record Editor (t : Type) where
   widget : Maybe t -> Act (Widget $ EditRes t)
 
 export
+adjWidget :
+     (Maybe a -> Maybe b)
+  -> (Widget (EditRes b) -> Widget (EditRes a))
+  -> Editor b
+  -> Editor a
+adjWidget adjm adjw ed = E $ map adjw . ed.widget . adjm
+
+export %inline
+edNodes : (HTMLNodes -> HTMLNodes) -> Editor t -> Editor t
+edNodes = adjWidget id . adjNodes
+
+export %inline
 adjEditor :
      (Maybe a -> Maybe b)
   -> (EditRes b -> EditRes a)
   -> Editor b
   -> Editor a
-adjEditor adjm adjres ed =
-  E $ \mb => Prelude.do
-    W n bs <- ed.widget (adjm mb)
-    pure $ W n $ P.mapOutput adjres bs
+adjEditor adjm adjres =
+  adjWidget adjm $ {events $= P.mapOutput adjres}
 
 ||| Views an editor through an isomorphism.
 export
