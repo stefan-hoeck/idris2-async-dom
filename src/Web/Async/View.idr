@@ -289,7 +289,7 @@ parameters {auto has : Has JSErr es}
   replaceBetween : (ri : Ref t) -> (rj : Ref u) -> HTMLNodes -> JS es ()
   replaceBetween ri rj ns = Prelude.do
     ej <- castElementByRef {t = Element} rj
-    setupNodes (\el,n => removeTill (up el) (up ej) >> append (up el) n) ri ns
+    setupNodes (\el,n => removeTill (up el) (up ej) >> after (up el) n) ri ns
 
   ||| Removes the given element from the DOM.
   export
