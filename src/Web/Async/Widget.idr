@@ -318,8 +318,7 @@ adjWidget :
   -> (Widget (EditRes b) -> Widget (EditRes a))
   -> Editor b
   -> Editor a
-adjWidget adjm adjw ed =
-  E $ \mb => adjw <$> ed.widget (adjm mb)
+adjWidget adjm adjw ed = E $ map adjw . ed.widget . adjm
 
 export %inline
 edNodes : (HTMLNodes -> HTMLNodes) -> Editor t -> Editor t

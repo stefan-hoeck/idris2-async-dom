@@ -248,6 +248,7 @@ removeTill x y = primIO go
      let MkIORes m w := prim__nextSibling x w
          Just n      := nullableToMaybe m    | Nothing => MkIORes () w
          MkIORes 1 w := prim__doRemove y n w | MkIORes _ w => MkIORes () w
+         MkIORes _ w := prim__remove n w
       in assert_total $ go w
 
 ||| Creates a DOM element of the given type.
