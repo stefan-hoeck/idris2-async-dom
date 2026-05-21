@@ -70,6 +70,13 @@ export
 prim__remove : ChildNode -> PrimIO ()
 
 export
+%foreign "browser:lambda:(x,w)=>x.nextSibling"
+prim__nextSibling : ChildNode -> PrimIO (Nullable ChildNode)
+
+%foreign "browser:lambda:(x,y,w)=>x.isEqualNode(y)?0:1"
+prim__doRemove : ChildNode -> ChildNode -> PrimIO Bits8
+
+export
 %foreign "browser:lambda:(s,w)=>document.createElement(s)"
 prim__createElement : String -> PrimIO Element
 
@@ -229,6 +236,19 @@ replace el n = primIO $ prim__replace el n
 export %inline
 remove : HasIO io => ChildNode -> io ()
 remove el = primIO $ prim__remove el
+
+||| Replaces all siblings after the first onde until the second
+||| is encountered.
+export
+removeTill : HasIO io => ChildNode -> ChildNode -> io ()
+removeTill x y = primIO go
+  where
+    go : PrimIO ()
+    go w =
+     let MkIORes m w := prim__nextSibling x w
+         Just n      := nullableToMaybe m    | Nothing => MkIORes () w
+         MkIORes 1 w := prim__doRemove y n w | MkIORes _ w => MkIORes () w
+      in assert_total $ go w
 
 ||| Creates a DOM element of the given type.
 export %inline

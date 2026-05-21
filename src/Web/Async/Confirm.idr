@@ -40,7 +40,7 @@ confirmStream ref cs es =
 ||| at most.
 export
 confirmed :
-     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
+     (wrap : HTMLNodes -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
   -> Maybe e
   -> Act (Widget $ Maybe e)
@@ -53,7 +53,7 @@ confirmed wrap ed m = Prelude.do
 ||| event.
 export
 confirmed1 :
-     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
+     (wrap : HTMLNodes -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> Editor e
   -> Maybe e
   -> Act (Widget $ Maybe e)
@@ -64,7 +64,7 @@ keyConfirmed : Editor e -> Maybe e -> Act (Widget $ Maybe e)
 keyConfirmed =
   confirmed $ \n => Prelude.do
     E es <- event {fs = [JSErr]} ConfirmEv
-    let n2 := withAttributes [onEscDown Confirm.Cancel, onEnterDown OK] n
+    let n2 := withAttributes [onEscDown Confirm.Cancel, onEnterDown OK] <$> n
     pure (neutral, W n2 es)
 
 export
@@ -75,7 +75,7 @@ cleanupDialog d =
 
 export
 confirmedModal :
-     (wrap : HTMLNode -> Act (Sink (EditRes e), Widget ConfirmEv))
+     (wrap : HTMLNodes -> Act (Sink (EditRes e), Widget ConfirmEv))
   -> DomID
   -> Editor e
   -> Maybe e
@@ -83,7 +83,7 @@ confirmedModal :
 confirmedModal wrap d ed m = Prelude.do
   let ref := elemRef d
   W n evs <- confirmed wrap ed m
-  replace ref n
+  children ref n
   showModal ref
   pure $ flip observe evs $ \case
     Nothing => cleanupDialog d

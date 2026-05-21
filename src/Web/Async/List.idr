@@ -65,7 +65,7 @@ initial (Just ts) =
 
 parameters {default 0xffff_fffe limit : Nat}
            (parent : Act (Ref Void, HTMLNodes -> Widget ListEv))
-           (row    : HTMLNode -> Act (Ref Void, Widget ()))
+           (row    : HTMLNodes -> Act (Ref Void, Widget ()))
            (ed     : Editor t)
 
   rw : Token World -> Maybe t -> Act (Widget $ ST t -> ST t)
@@ -78,7 +78,7 @@ parameters {default 0xffff_fffe limit : Nat}
   add rpar le = do
     tok   <- token
     W n s <- rw tok Nothing
-    if le == Append then append rpar n else prepend rpar n
+    if le == Append then appendMany rpar n else prependMany rpar n
     pure $ emit (new tok le) <+> s
 
   ||| An editor for lists of values.
@@ -94,7 +94,7 @@ parameters {default 0xffff_fffe limit : Nat}
       (ref, makeW) <- parent
       ini          <- lift1 $ initial m
       rows         <- traverseList (\(t,v) => rw t (Just v)) ini
-      let W n listEvs := makeW (map node rows)
+      let W n listEvs := makeW (rows >>= nodes)
       pure $ W n $
         (emits (map events rows) <+> evalMap (add ref) listEvs)
         |> parJoin (S limit)
