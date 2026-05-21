@@ -73,7 +73,7 @@ export
 %foreign "browser:lambda:(x,w)=>x.nextSibling"
 prim__nextSibling : ChildNode -> PrimIO (Nullable ChildNode)
 
-%foreign "browser:lambda:(x,y,w)=>x.isEqualNode(y)?0:1"
+%foreign "browser:lambda:(x,y,w)=>x.isEqualNode(y)?1:0"
 prim__doRemove : ChildNode -> ChildNode -> PrimIO Bits8
 
 export
@@ -246,9 +246,11 @@ removeTill x y = primIO go
     go : PrimIO ()
     go w =
      let MkIORes m w := prim__nextSibling x w
+         MkIORes _ w := toPrim (putStrLn "removing node") w
          Just n      := nullableToMaybe m    | Nothing => MkIORes () w
-         MkIORes 1 w := prim__doRemove y n w | MkIORes _ w => MkIORes () w
+         MkIORes 0 w := prim__doRemove y n w | MkIORes _ w => MkIORes () w
          MkIORes _ w := prim__remove n w
+         MkIORes _ w := toPrim (putStrLn "removed node") w
       in assert_total $ go w
 
 ||| Creates a DOM element of the given type.

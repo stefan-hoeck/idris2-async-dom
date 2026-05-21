@@ -291,7 +291,6 @@ parameters {auto has : Has JSErr es}
     ej <- castElementByRef {t = Element} rj
     setupNodes (\el,n => removeTill (up el) (up ej) >> append (up el) n) ri ns
 
-
   ||| Removes the given element from the DOM.
   export
   remove : Ref t -> JS es ()
