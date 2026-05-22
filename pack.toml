@@ -8,32 +8,9 @@ type   = "local"
 path   = "docs"
 ipkg   = "docs.ipkg"
 
-[custom.all.css]
-type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-css"
-commit = "latest:main"
-ipkg   = "css.ipkg"
-
-[custom.all.ref1]
-type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-ref1"
-commit = "latest:main"
-ipkg   = "ref1.ipkg"
-
-[custom.all.array]
-type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-array"
-commit = "latest:main"
-ipkg   = "array.ipkg"
-
-[custom.all.async]
-type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-async"
-commit = "latest:main"
-ipkg   = "async.ipkg"
-
-[custom.all.streams]
-type   = "git"
-url    = "https://github.com/stefan-hoeck/idris2-streams"
-commit = "latest:main"
-ipkg   = "streams.ipkg"
+[custom.all]
+css.commit     = "latest:main"
+ref1.commit    = "latest:main"
+array.commit   = "latest:main"
+async.commit   = "latest:main"
+streams.commit = "latest:main"
