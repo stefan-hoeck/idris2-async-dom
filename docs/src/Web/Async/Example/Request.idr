@@ -5,7 +5,6 @@ import HTTP.API.Client
 import JSON.Simple.Derive
 import Web.Async.Example.CSS.Requests
 import Web.Async.Example.Util
-import Web.Async.HTTP
 
 %default total
 %language ElabReflection

@@ -24,7 +24,6 @@ modules    = Text.CSS.Extra
            , Web.Async.Confirm
            , Web.Async.Event
            , Web.Async.Form
-           , Web.Async.HTTP
            , Web.Async.List
            , Web.Async.Util
            , Web.Async.View
