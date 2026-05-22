@@ -4,11 +4,9 @@ authors    = "stefan-hoeck"
 brief      = "Concurrency and streaming in interactive web pages"
 
 depends    = base      >= 0.8.0
-           , async-js
+           , http-client-api
            , barbies
-           , dom
            , css
-           , json-simple
            , monocle
            , streams
 
@@ -26,7 +24,6 @@ modules    = Text.CSS.Extra
            , Web.Async.Confirm
            , Web.Async.Event
            , Web.Async.Form
-           , Web.Async.HTTP
            , Web.Async.List
            , Web.Async.Util
            , Web.Async.View
