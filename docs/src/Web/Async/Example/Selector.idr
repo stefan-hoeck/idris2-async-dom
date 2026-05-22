@@ -1,6 +1,7 @@
 module Web.Async.Example.Selector
 
 import Derive.Finite
+import HTTP.I18n.EN
 import Text.HTML.Select
 import Web.Async.Example.Balls
 import Web.Async.Example.CSS

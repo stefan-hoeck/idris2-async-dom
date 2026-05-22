@@ -2,6 +2,7 @@ module Web.Async.Example.Request
 
 import Derive.Prelude
 import HTTP.API.Client
+import HTTP.I18n
 import JSON.Simple.Derive
 import Web.Async.Example.CSS.Requests
 import Web.Async.Example.Util
@@ -30,13 +31,13 @@ content =
     , p [ Id quoteInfo ] []
     ]
 
-printError : HTTPError -> String
+printError : HTTPLocal => HTTPError -> String
 printError Timeout = "connection timed out"
 printError NetworkError = "error when connecting to server"
 printError (DecError st s) = "server responded with status code: \{show st} (\{s})"
 printError (ReqError e) = interpolate e
 
-dispResult : Result [HTTPError] Quote -> HTMLNodes
+dispResult : HTTPLocal => Result [HTTPError] Quote -> HTMLNodes
 dispResult (Left $ Here x)  = [ div [class requestError ] [ Text $ printError x] ]
 dispResult (Right q) =
   [ Text "— "
@@ -49,7 +50,7 @@ Quotes =
   [path "https" "elm-lang.org" ["api","random-quotes"], Get [JSON] Quote]
 
 export
-run : JSStream Void
+run : HTTPLocal => JSStream Void
 run =
   mvcAct ReqInit () $ \e,_ => case e of
     ReqInit  => child exampleDiv content
