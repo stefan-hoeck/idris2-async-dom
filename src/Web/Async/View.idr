@@ -4,6 +4,7 @@ import Data.Linear.Traverse1
 import Data.Either
 import Data.Maybe
 import Data.String
+import HTTP.API.Client.FFI
 import IO.Async.Logging
 import JS
 import Syntax.T1
@@ -26,39 +27,6 @@ prim__observeResize : Element -> (DOMRect -> PrimIO ()) -> PrimIO ()
 
 %foreign "browser:lambda:(e,f,w) => {const o = new MutationObserver(() => {if (!e.isConnected) {o.disconnect(); f(w);}}); o.observe(document.body, {childList : true, subtree : true});}"
 prim__observeRemove : Element -> PrimIO () -> PrimIO ()
-
-export
-%foreign "browser:lambda:x=>x.bubbles?1:0"
-bubbles : Event -> Bool
-
-export
-%foreign "browser:lambda:x=>x.cancelable?1:0"
-cancelable : Event -> Bool
-
-%foreign "browser:lambda:(x,s,f,w)=>x.addEventListener(s,\e => f(e)(w))"
-prim__addlistener : EventTarget -> String -> (Event -> PrimIO ()) -> PrimIO ()
-
-%foreign "browser:lambda:(x,w)=>x.preventDefault()"
-prim__preventDefault : Event -> PrimIO ()
-
-%foreign "browser:lambda:(x,w)=>x.stopPropagation()"
-prim__stopPropagation : Event -> PrimIO ()
-
---------------------------------------------------------------------------------
--- IO1
---------------------------------------------------------------------------------
-
-export %inline
-addEventListener : EventTarget -> String -> (Event -> IO1 ()) -> IO1 ()
-addEventListener et ev cb = ffi $ prim__addlistener et ev (primRun . cb)
-
-export %inline
-preventDefault : Event -> IO1 ()
-preventDefault ev = ffi $ prim__preventDefault ev
-
-export %inline
-stopPropagation : Event -> IO1 ()
-stopPropagation ev = ffi $ prim__stopPropagation ev
 
 --------------------------------------------------------------------------------
 -- Event Handler

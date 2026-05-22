@@ -4,6 +4,7 @@ import Data.Array
 import Data.ByteString
 import Data.Buffer
 import Data.Vect
+import HTTP.API.Client.FFI
 import Web.Async.Event
 import Web.Internal.Types
 import public FS

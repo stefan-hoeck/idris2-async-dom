@@ -1,6 +1,7 @@
 module Web.Async.Example.Request
 
 import Derive.Prelude
+import HTTP.API.Client
 import JSON.Simple.Derive
 import Web.Async.Example.CSS.Requests
 import Web.Async.Example.Util
@@ -21,7 +22,6 @@ record Quote where
 data ReqEv : Type where
   ReqInit  : ReqEv
   GetQuote : ReqEv
-  Got      : Either HTTPError Quote -> ReqEv
 
 content : Sink ReqEv => HTMLNode
 content =
@@ -34,29 +34,27 @@ content =
 printError : HTTPError -> String
 printError Timeout = "connection timed out"
 printError NetworkError = "error when connecting to server"
-printError (BadStatus m) = "server responded with bad status code: \{show m}"
-printError (JSONError str x) =
-  """
-  Error when decoding JSON string: \{str}
+printError (DecError st s) = "server responded with status code: \{show st} (\{s})"
+printError (ReqError e) = interpolate e
 
-  \{x}
-  """
-
-dispResult : Either HTTPError Quote -> HTMLNodes
-dispResult (Left x)  = [ div [class requestError ] [ Text $ printError x] ]
+dispResult : Result [HTTPError] Quote -> HTMLNodes
+dispResult (Left $ Here x)  = [ div [class requestError ] [ Text $ printError x] ]
 dispResult (Right q) =
   [ Text "— "
   , div [] [ Text q.source ]
   , Text " by \{q.author} (\{show q.year})"
   ]
 
+Quotes : HList [ReqPath,ReqMethod]
+Quotes =
+  [path "https" "elm-lang.org" ["api","random-quotes"], Get [JSON] Quote]
+
 export
 run : JSStream Void
 run =
   mvcAct ReqInit () $ \e,_ => case e of
     ReqInit  => child exampleDiv content
-    GetQuote =>
-      ignore $ lift1 $ getJSON "https://elm-lang.org/api/random-quotes" Got
-    Got x    => do
-      children quoteInfo (dispResult x)
-      text quote $ either (const "") quote x
+    GetQuote => Prelude.do
+      res <- attempt (requestJSONEndpoint Quotes [] Quote)
+      children quoteInfo (dispResult res)
+      text quote $ either (const "") quote res
