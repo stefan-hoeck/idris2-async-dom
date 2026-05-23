@@ -33,7 +33,7 @@ content ini =
       [ div [class pageTitle] ["async-dom: Examples"]
       , div [class contentHeader]
           [ label [class widgetLabel] ["Choose an Example"]
-          , selectFromList values (Just ini) appName id
+          , selectFromList' values (Just ini) appName id
               [classes [widget, selectIn, exampleSelector]]
           ]
       , div [Id exampleDiv] []

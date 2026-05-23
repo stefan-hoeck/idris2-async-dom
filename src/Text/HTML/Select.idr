@@ -12,15 +12,29 @@ data SelectEntry : (t : Type) -> Type where
   Title : String    -> SelectEntry t
   Entry : (val : t) -> String -> SelectEntry t
 
+public export
+record SelectEv t where
+  constructor SE
+  index : Nat
+  label : String
+  value : t
+
+export
+Functor SelectEv where
+  map f (SE i l v) = SE i l $ f v
+
 --------------------------------------------------------------------------------
 -- Utilities
 --------------------------------------------------------------------------------
 
-ix : List (SelectEntry t) -> Nat -> Maybe t
-ix []                _     = Nothing
-ix (Entry v _ :: xs) 0     = Just v
-ix (Title s   :: xs) 0     = Nothing
-ix (x :: xs)         (S k) = ix xs k
+selectIx : List (SelectEntry t) -> Nat -> Maybe (SelectEv t)
+selectIx vs n = go vs n
+  where
+    go : List (SelectEntry t) -> Nat -> Maybe (SelectEv t)
+    go []                _     = Nothing
+    go (Entry v s :: xs) 0     = Just (SE n s v)
+    go (Title _   :: xs) 0     = Nothing
+    go (x :: xs)         (S k) = go xs k
 
 app : {0 a : _} -> SnocList (a,List b) -> SnocList b -> a -> SnocList (a,List b)
 app sx [<] x = sx
@@ -39,7 +53,7 @@ groups sg sp l n (Entry v s :: xs) = groups sg (sp :< (n,v,s)) l (S n) xs
 
 export
 selectEntries :
-     {auto snk : Sink e}
+     {auto snk : Sink (SelectEv e)}
   -> (entries  : List (SelectEntry t))
   -> (sel      : t -> Bool)
   -> (toEvent  : t -> e)
@@ -50,7 +64,7 @@ selectEntries es sel toEv attrs =
     -- Note: The `change` event handler must be the last attribute
     --       otherwise it might already fire when the node is being
     --       set up.
-    (attrs ++ [onChangeMaybe (map toEv . ix es . cast)])
+    (attrs ++ [onChangeMaybe (map (map toEv) . selectIx es . cast)])
     (groups [<] [<] "" 0 es >>= grp)
   where
     opt : (Nat,t,String) -> HTMLNode
@@ -70,7 +84,7 @@ selectEntries es sel toEv attrs =
 ||| @attrs   : additional attributes
 export
 selectFromListBy :
-     {auto snk : Sink e}
+     {auto snk : Sink (SelectEv e)}
   -> (values   : List t)
   -> (sel      : t -> Bool)
   -> (display  : t -> String)
@@ -89,7 +103,7 @@ selectFromListBy vs sel f = selectEntries ((\x => Entry x $ f x) <$> vs) sel
 ||| @attrs   : additional attributes
 export
 selectFromList :
-     {auto snk : Sink e}
+     {auto snk : Sink (SelectEv e)}
   -> {auto eq : Eq t}
   -> (values  : List t)
   -> (init    : Maybe t)
@@ -98,3 +112,41 @@ selectFromList :
   -> (attrs   : List (Attribute Select))
   -> HTMLNode
 selectFromList vs i = selectFromListBy vs ((i ==) . Just)
+
+parameters {auto snk : Sink e}
+
+  ||| Simplified version of `selectEntries` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectEntries' :
+       (entries  : List (SelectEntry t))
+    -> (sel      : t -> Bool)
+    -> (toEvent  : t -> e)
+    -> (attrs    : List (Attribute Select))
+    -> HTMLNode
+  selectEntries' = selectEntries @{cmap value snk}
+
+  ||| Simplified version of `selectFromListBy` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectFromListBy' :
+       (values   : List t)
+    -> (sel      : t -> Bool)
+    -> (display  : t -> String)
+    -> (toEvent  : t -> e)
+    -> (attrs    : List (Attribute Select))
+    -> HTMLNode
+  selectFromListBy' = selectFromListBy @{cmap value snk}
+
+  ||| Simplified version of `selectFromList` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectFromList' :
+       {auto eq : Eq t}
+    -> (values  : List t)
+    -> (init    : Maybe t)
+    -> (display : t -> String)
+    -> (toEvent : t -> e)
+    -> (attrs   : List (Attribute Select))
+    -> HTMLNode
+  selectFromList' = selectFromList @{cmap value snk}
