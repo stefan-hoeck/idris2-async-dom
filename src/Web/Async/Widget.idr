@@ -14,6 +14,7 @@ import public Web.Async.I18n
 import public Web.Async.Widget.Types
 
 %default total
+%hide Data.Linear.(.)
 %hide Text.HTML.Node.a
 %hide Types.SelectionMode.Select
 
@@ -129,28 +130,19 @@ entriesInit []                = Nothing
 entriesInit (Title _   :: xs) = entriesInit xs
 entriesInit (Entry v _ :: xs) = Just v
 
+selToRes : Maybe (SelectEv t) -> EditRes t
+selToRes = maybe Missing (Valid . value)
+
+initEv : Nat -> (t -> Bool) -> List (SelectEntry t) -> Maybe (SelectEv t)
+initEv n f []                = Nothing
+initEv n f (Title _   :: xs) = initEv n f xs
+initEv n f (Entry v s :: xs) =
+  case f v of
+    False => initEv (S n) f xs
+    True  => Just (SE n s v)
+
 parameters {auto lc : DOMLocal}
            {auto eq : Eq t}
-           {auto ip : Interpolation t}
-
-  ||| A select element displaying the values of type `v`
-  ||| shown in the given list.
-  |||
-  ||| It fires events of type `t`, and uses two functions, one for
-  ||| converting elements to events and one for displaying elements.
-  export
-  sel :
-       (v -> t)
-    -> (v -> String)
-    -> List v
-    -> List (Attribute Select)
-    -> Maybe t
-    -> JS es (Widget (EditRes t))
-  sel f g vs as m = do
-    let ini := listInit m f vs
-    E es <- eventFrom (maybe Missing Valid ini)
-    let es' := observe logSelect es
-    pure $ W (selectFromListBy vs ((ini ==) . Just . f) g (Valid . f) as) es'
 
   ||| A select element displaying the values of type `v`
   ||| shown in the given list.
@@ -165,9 +157,25 @@ parameters {auto lc : DOMLocal}
     -> JS es (Widget (EditRes t))
   selEntries vs as m = do
     let ini := m <|> entriesInit vs
-    E es <- eventFrom (maybe Missing Valid ini)
-    let es' := observe logSelect es
-    pure $ W (selectEntries vs ((ini ==) . Just) Valid as) es'
+    E ws @{s} <- eventFrom (initEv 0 ((ini ==) . Just) vs)
+    let ms := cmap Just s
+    let ws' := observe logSelect ws |> P.mapOutput selToRes
+    pure $ W (selectEntries vs ((ini ==) . Just) id as) ws'
+
+  ||| A select element displaying the values of type `v`
+  ||| shown in the given list.
+  |||
+  ||| It fires events of type `t`, and uses two functions, one for
+  ||| converting elements to events and one for displaying elements.
+  export
+  sel :
+       (v -> t)
+    -> (v -> String)
+    -> List v
+    -> List (Attribute Select)
+    -> Maybe t
+    -> JS es (Widget (EditRes t))
+  sel f g = selEntries . map (\v => Entry (f v) (g v))
 
 export %inline
 txtEdit :

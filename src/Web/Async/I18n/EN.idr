@@ -3,6 +3,7 @@ module Web.Async.I18n.EN
 import HTTP.API.Client.I18n.EN
 import IO.Async.JS
 import IO.Async.Logging
+import Text.HTML.Select
 import Web.Async.Widget.Types
 import public Web.Async.I18n
 
@@ -29,9 +30,8 @@ parameters {auto log : Logger JS}
     logFormRes (Invalid x) = debug "invalid form data: \{x}"
     logFormRes (Valid x)   = debug "valid form data"
 
-    logSelect Missing     = debug "no value selected"
-    logSelect (Invalid x) = debug "invalid value selected: \{x}"
-    logSelect (Valid x)   = debug "value selected: \{x}"
+    logSelect Nothing           = debug "no value selected"
+    logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: show n)"
 
     ldebug s              = debug s
     ltrace s              = trace s
