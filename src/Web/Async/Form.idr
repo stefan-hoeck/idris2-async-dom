@@ -27,7 +27,8 @@ toField (nm, W n _)     = Just (FF nm n)
 formStream : List (Widget (t -> t)) -> t -> JSStream t
 formStream ws ini = merge (map events ws) |> scanFrom1 ini
 
-parameters {0 f        : Type}
+parameters {auto loc   : DOMLocal}
+           {0 f        : Type}
            {auto ipf   : Interpolation f}
            (0 rec      : (f -> Type) -> Type)
            (formNode   : List FormField -> HTMLNode)
@@ -61,7 +62,7 @@ parameters {0 f        : Type}
 
     -- adjust the input stream so that all input is used to update
     -- the corresponding field of the barbie
-    let s2 := s |> P.mapOutput (set (field' v))
+    let s2 := P.observe (logFormField v) s |> P.mapOutput (set (field' v))
 
     pure $ (interpolate v, W n s2)
 
@@ -102,7 +103,8 @@ parameters {0 f        : Type}
          -- group the editing fields in a single HTML node
              node := formNode (mapMaybe toField ws)
 
-         pure $ W node (formStream (map snd ws) missAll |> mapOutput bsequence)
+         pure $ W node $
+           formStream (map snd ws) missAll |> mapOutput bsequence |> P.observe logFormRes
 
 parameters {0 ts       : List Type}
            (formNode   : List HTMLNode -> HTMLNode)

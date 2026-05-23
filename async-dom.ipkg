@@ -24,10 +24,13 @@ modules    = Text.CSS.Extra
            , Web.Async.Confirm
            , Web.Async.Event
            , Web.Async.Form
+           , Web.Async.I18n
+           , Web.Async.I18n.EN
            , Web.Async.List
            , Web.Async.Util
            , Web.Async.View
            , Web.Async.Widget
+           , Web.Async.Widget.Types
 
            , Web.Canvas
            , Web.Canvas.Angle
