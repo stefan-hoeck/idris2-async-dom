@@ -17,23 +17,22 @@ parameters {auto log : Logger JS}
     editRes (Valid val)   = ""
     fileStr               = "file"
 
-    logRes nm Missing     = trace "missing \{nm}"
-    logRes nm (Invalid x) = trace "invalid \{nm}: \{x}"
-    logRes nm (Valid x)   = trace "valid \{nm}: \{x}"
+    logRes nm Missing     = debug "missing \{nm}"
+    logRes nm (Invalid x) = debug "invalid \{nm}: \{x}"
+    logRes nm (Valid x)   = debug "valid \{nm}: \{x}"
 
-    logFormField fld Missing     = trace "missing \{fld}"
-    logFormField fld (Invalid x) = trace "invalid \{fld}: \{x}"
-    logFormField fld (Valid x)   = trace "valid \{fld}"
+    logFormField fld Missing     = debug "missing \{fld}"
+    logFormField fld (Invalid x) = debug "invalid \{fld}: \{x}"
+    logFormField fld (Valid x)   = debug "valid \{fld}"
 
-    logFormRes Missing     = trace "missing form data"
-    logFormRes (Invalid x) = trace "invalid form data: \{x}"
-    logFormRes (Valid x)   = trace "valid form data"
+    logFormRes Missing     = debug "missing form data"
+    logFormRes (Invalid x) = debug "invalid form data: \{x}"
+    logFormRes (Valid x)   = debug "valid form data"
 
-    logSelect Missing     = trace "no value selected"
-    logSelect (Invalid x) = trace "invalid value selected: \{x}"
-    logSelect (Valid x)   = trace "value selected: \{x}"
+    logSelect Missing     = debug "no value selected"
+    logSelect (Invalid x) = debug "invalid value selected: \{x}"
+    logSelect (Valid x)   = debug "value selected: \{x}"
 
     ldebug s              = debug s
     ltrace s              = trace s
-    logInput s            = trace $ "text input: '\{s}'"
-
+    logInput s            = debug $ "text input: '\{s}'"
