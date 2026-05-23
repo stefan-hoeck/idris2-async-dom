@@ -9,6 +9,7 @@ import Web.Internal.Types
 %default total
 %language ElabReflection
 %hide Data.Linear.(.)
+%hide Text.HTML.Node.a
 
 --------------------------------------------------------------------------------
 -- EditRes
