@@ -27,13 +27,13 @@ appName Balls = "Bouncing Balls"
 -- appName Fract = "Fractals"
 appName Math  = "Math Game"
 
-content : Sink (SelectEv App) => App -> HTMLNode
+content : Sink App => App -> HTMLNode
 content ini =
   div [ class contentList ]
       [ div [class pageTitle] ["async-dom: Examples"]
       , div [class contentHeader]
           [ label [class widgetLabel] ["Choose an Example"]
-          , selectFromList values (Just ini) appName id
+          , selectFromList' values (Just ini) appName id
               [classes [widget, selectIn, exampleSelector]]
           ]
       , div [Id exampleDiv] []
@@ -51,6 +51,6 @@ ui : IO ()
 ui =
   runJS $ do
     style appStyle rules
-    E app <- eventFrom (SE 0 "Reset" Reset)
+    E app <- eventFrom Reset
     child contentDiv (content Reset)
-    pullErr $ app |> switchMap (prog . value)
+    pullErr $ app |> switchMap prog

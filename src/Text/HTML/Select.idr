@@ -112,3 +112,41 @@ selectFromList :
   -> (attrs   : List (Attribute Select))
   -> HTMLNode
 selectFromList vs i = selectFromListBy vs ((i ==) . Just)
+
+parameters {auto snk : Sink e}
+
+  ||| Simplified version of `selectEntries` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectEntries' :
+       (entries  : List (SelectEntry t))
+    -> (sel      : t -> Bool)
+    -> (toEvent  : t -> e)
+    -> (attrs    : List (Attribute Select))
+    -> HTMLNode
+  selectEntries' = selectEntries @{cmap value snk}
+
+  ||| Simplified version of `selectFromListBy` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectFromListBy' :
+       (values   : List t)
+    -> (sel      : t -> Bool)
+    -> (display  : t -> String)
+    -> (toEvent  : t -> e)
+    -> (attrs    : List (Attribute Select))
+    -> HTMLNode
+  selectFromListBy' = selectFromListBy @{cmap value snk}
+
+  ||| Simplified version of `selectFromList` that does not take
+  ||| a full `SelectEvent` sink.
+  export %inline
+  selectFromList' :
+       {auto eq : Eq t}
+    -> (values  : List t)
+    -> (init    : Maybe t)
+    -> (display : t -> String)
+    -> (toEvent : t -> e)
+    -> (attrs   : List (Attribute Select))
+    -> HTMLNode
+  selectFromList' = selectFromList @{cmap value snk}
