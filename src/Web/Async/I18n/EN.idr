@@ -16,9 +16,6 @@ parameters {auto log : Logger JS}
   logRes' nm (Invalid x) = debug "invalid \{nm}: \{x}"
   logRes' nm (Valid x)   = debug "valid \{nm}"
 
-  logN : Nat -> EditRes s -> Async JS es ()
-  logN e r = logRes' "field \{show e}" r
-
   export
   DOMLocal where
     editRes Missing       = "mandatory field"
@@ -37,7 +34,7 @@ parameters {auto log : Logger JS}
 
     logFormRes = logRes' "form data"
 
-    logFormFieldN = ?foobar
+    logFormFieldN e r = logRes' "field \{show e}" r
 
     logSelect Nothing           = debug "no value selected"
     logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: \{show n})"
