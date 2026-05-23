@@ -31,7 +31,7 @@ parameters {auto log : Logger JS}
     logFormRes (Valid x)   = debug "valid form data"
 
     logSelect Nothing           = debug "no value selected"
-    logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: show n)"
+    logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: \{show n})"
 
     ldebug s              = debug s
     ltrace s              = trace s
