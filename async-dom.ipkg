@@ -30,6 +30,7 @@ modules    = Text.CSS.Extra
            , Web.Async.Util
            , Web.Async.View
            , Web.Async.Widget
+           , Web.Async.Widget.Types
 
            , Web.Canvas
            , Web.Canvas.Angle
