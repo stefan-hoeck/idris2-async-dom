@@ -11,6 +11,14 @@ import public Web.Async.I18n
 
 parameters {auto log : Logger JS}
 
+  logRes' : String -> EditRes x -> Async JS es ()
+  logRes' nm Missing     = debug "missing \{nm}"
+  logRes' nm (Invalid x) = debug "invalid \{nm}: \{x}"
+  logRes' nm (Valid x)   = debug "valid \{nm}"
+
+  logN : Nat -> EditRes s -> Async JS es ()
+  logN e r = logRes' "field \{show e}" r
+
   export
   DOMLocal where
     editRes Missing       = "mandatory field"
@@ -22,13 +30,14 @@ parameters {auto log : Logger JS}
     logRes nm (Invalid x) = debug "invalid \{nm}: \{x}"
     logRes nm (Valid x)   = debug "valid \{nm}: \{x}"
 
-    logFormField fld Missing     = debug "missing \{fld}"
-    logFormField fld (Invalid x) = debug "invalid \{fld}: \{x}"
-    logFormField fld (Valid x)   = debug "valid \{fld}"
+    logEnded  = debug "stream ended"
+    logRemove = debug "element removed"
 
-    logFormRes Missing     = debug "missing form data"
-    logFormRes (Invalid x) = debug "invalid form data: \{x}"
-    logFormRes (Valid x)   = debug "valid form data"
+    logFormField = logRes' . interpolate
+
+    logFormRes = logRes' "form data"
+
+    logFormFieldN = ?foobar
 
     logSelect Nothing           = debug "no value selected"
     logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: \{show n})"

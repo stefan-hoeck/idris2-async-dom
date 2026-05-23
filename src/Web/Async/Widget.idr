@@ -6,6 +6,7 @@ import Data.String
 import Text.HTML
 import Text.HTML.DomID
 import Text.HTML.Select
+import Web.Async.I18n
 import Web.Async.Util
 import Web.Async.View
 import Web.Internal.Types
@@ -26,6 +27,25 @@ import public Web.Async.Widget.Types
 export %inline
 disabledEdit : {0 a : _} -> Has JSErr es => Ref t -> EditRes a -> JS es ()
 disabledEdit r = disabled r . not . isValid
+
+endStream : DOMLocal => JSStream () -> JSStream t -> JSStream t
+endStream end es =
+  finally logEnded $ haltOn (P.observe' logRemove end) es
+
+||| Adjusts a widget in such a way that its input streams ends
+||| as soon as its node is removed from the DOM.
+|||
+||| This is used in utilities such as `bindEd` or `Web.Async.List`, where
+||| external events decide when a node is removed from the UI.
+export
+endOnRemove : DOMLocal => Widget t -> JS es (Widget t)
+endOnRemove (W (El t as ns) es) = Prelude.do
+  E end <- event ()
+  pure $ W (El t (onRemove () :: as) ns) (haltOn end es)
+endOnRemove (W (EEl t as) es) = Prelude.do
+  E end <- event ()
+  pure $ W (EEl t $ onRemove () :: as) (haltOn end es)
+endOnRemove w = pure w
 
 --------------------------------------------------------------------------------
 -- Text Widgets
@@ -199,7 +219,8 @@ selEdit vs = E . sel id interpolate vs
 
 export
 bindEd :
-     (cls  : Class)
+     {auto loc : DOMLocal}
+  -> (cls  : Class)
   -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
   -> (a -> Editor b)
   -> (Maybe b -> a)

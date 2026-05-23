@@ -104,9 +104,12 @@ parameters {auto loc   : DOMLocal}
              node := formNode (mapMaybe toField ws)
 
          pure $ W node $
-           formStream (map snd ws) missAll |> mapOutput bsequence |> P.observe logFormRes
+              formStream (map snd ws) missAll
+           |> mapOutput bsequence
+           |> P.observe logFormRes
 
-parameters {0 ts       : List Type}
+parameters {auto loc   : DOMLocal}
+           {0 ts       : List Type}
            (formNode   : List HTMLNode -> HTMLNode)
            {auto els   : All (`Elem` ts) ts}
 
@@ -114,10 +117,10 @@ parameters {0 ts       : List Type}
   HForm = (Widget (All EditRes ts -> All EditRes ts))
 
   hfield : Elem t ts -> Editor t -> Maybe (HList ts) -> Act HForm
-  hfield e (E fun) mrec = do
+  hfield e (E fun) mrec = Prelude.do
     W n s <- fun $ Lens.get_ (prod t) <$> mrec
-    let s2 := s |> P.mapOutput (set $ prod t)
-    pure $ W n s2
+    pure $ W n
+      $ observe (logFormFieldN $ elemToNat e) s |> P.mapOutput (set $ prod t)
 
   ||| An editable web form where the different fields of a
   ||| record can be edited and validated.
@@ -149,4 +152,5 @@ parameters {0 ts       : List Type}
          -- group the editing fields in a single HTML node
              node := formNode (map node ws)
 
-         pure $ W node (formStream ws miss |> mapOutput hsequence)
+         pure $ W node $
+           formStream ws miss |> mapOutput hsequence |> P.observe logFormRes

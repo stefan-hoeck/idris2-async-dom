@@ -94,21 +94,6 @@ export
 once : t -> Widget t
 once = W Empty . emit
 
-||| Adjusts a widget in such a way that its input streams ends
-||| as soon as its node is removed from the DOM.
-|||
-||| This is used in utilities such as `bindEd` or `Web.Async.List`, where
-||| external events decide when a node is removed from the UI.
-export
-endOnRemove : Widget t -> JS es (Widget t)
-endOnRemove (W (El t as ns) es) = Prelude.do
-  E end <- event ()
-  pure $ W (El t (onRemove () :: as) ns) (haltOn end es)
-endOnRemove (W (EEl t as) es) = Prelude.do
-  E end <- event ()
-  pure $ W (EEl t $ onRemove () :: as) (haltOn end es)
-endOnRemove w = pure w
-
 export
 Functor Widget where
   map f (W n p) = W n $ mapOutput f p
