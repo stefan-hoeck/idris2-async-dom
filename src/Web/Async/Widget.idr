@@ -41,10 +41,10 @@ export
 endOnRemove : DOMLocal => Widget t -> JS es (Widget t)
 endOnRemove (W (El t as ns) es) = Prelude.do
   E end <- event ()
-  pure $ W (El t (onRemove () :: as) ns) (haltOn end es)
+  pure $ W (El t (onRemove () :: as) ns) (endStream end es)
 endOnRemove (W (EEl t as) es) = Prelude.do
   E end <- event ()
-  pure $ W (EEl t $ onRemove () :: as) (haltOn end es)
+  pure $ W (EEl t $ onRemove () :: as) (endStream end es)
 endOnRemove w = pure w
 
 --------------------------------------------------------------------------------
