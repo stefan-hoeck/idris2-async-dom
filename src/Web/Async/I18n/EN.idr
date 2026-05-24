@@ -34,12 +34,12 @@ parameters {auto log : Logger JS}
     ldebug s              = debug s
     ltrace s              = trace s
 
+    logAbort          = debug "aborting stream via kill switch"
     logEnded          = debug "stream ended"
     logFormField      = logRes' . interpolate
     logFormFieldN e r = logRes' "field \{show e}" r
     logFormRes        = logRes' "form data"
     logInput s        = debug $ "text input: '\{s}'"
-    logRemove         = debug "element removed"
     logReplaced       = debug "replaced bound editor"
     logSwitch         = debug "switching bound editor"
     logSwitchStopped  = debug "stopped bound editor"

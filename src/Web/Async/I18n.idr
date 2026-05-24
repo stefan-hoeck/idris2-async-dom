@@ -14,12 +14,12 @@ interface JSLocal => DOMLocal where
   ldebug           : Lazy String -> Async JS es ()
   ltrace           : Lazy String -> Async JS es ()
 
+  logAbort         : Async JS es ()
   logEnded         : Async JS es ()
   logFormField     : Interpolation t => t -> EditRes s -> Async JS es ()
   logFormFieldN    : Nat -> EditRes s -> Async JS es ()
   logFormRes       : EditRes s -> Async JS es ()
   logInput         : String -> Async JS es ()
-  logRemove        : Async JS es ()
   logReplaced      : Async JS es ()
   logRes           : Interpolation t => String -> EditRes t -> Async JS es ()
   logSelect        : Maybe (SelectEv t) -> Async JS es ()

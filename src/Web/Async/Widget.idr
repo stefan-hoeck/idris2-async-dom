@@ -32,7 +32,7 @@ disabledEdit r = disabled r . not . isValid
 
 endStream : DOMLocal => JSStream () -> JSStream t -> JSStream t
 endStream end es =
-  finally logEnded $ haltOn (P.observe' logRemove end) es
+  finally logEnded $ haltOn (P.observe' logAbort end) es
 
 ||| Adjusts a widget in such a way that its input streams ends
 ||| as soon as one of its nodes are removed from the DOM.
@@ -236,7 +236,8 @@ stopref = newref Nothing
 %inline
 stopStream : DOMLocal => StopRef -> Act (Event JS [JSErr] ())
 stopStream ref = Prelude.do
-  readref ref >>= traverse_ (\(E {}) => sink () >> logSwitchStopped)
+  m <- readref ref
+  for_ m $ \(E {}) => sink () >> logSwitchStopped
   ev  <- event ()
   writeref ref (Just ev)
   pure ev
