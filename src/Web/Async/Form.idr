@@ -17,12 +17,12 @@ import Text.HTML.DomID
 public export
 record FormField where
   constructor FF
-  name : String
-  node : HTMLNode
+  name  : String
+  nodes : HTMLNodes
 
 toField : (String,Widget t) -> Maybe FormField
-toField (nm, W Empty _) = Nothing
-toField (nm, W n _)     = Just (FF nm n)
+toField (nm, W [] _) = Nothing
+toField (nm, W ns _) = Just (FF nm ns)
 
 formStream : List (Widget (t -> t)) -> t -> JSStream t
 formStream ws ini = merge (map events ws) |> scanFrom1 ini
@@ -31,7 +31,7 @@ parameters {auto loc   : DOMLocal}
            {0 f        : Type}
            {auto ipf   : Interpolation f}
            (0 rec      : (f -> Type) -> Type)
-           (formNode   : List FormField -> HTMLNode)
+           (formNode   : FormField -> HTMLNode)
            {0 g        : f -> Type}
            {auto sings : rec Singleton}
            {auto fuc   : FunctorB f rec}
@@ -101,16 +101,15 @@ parameters {auto loc   : DOMLocal}
          let ws   := bfoldMap (Prelude.Lin:<) recw <>> []
 
          -- group the editing fields in a single HTML node
-             node := formNode (mapMaybe toField ws)
+             ns   := formNode <$> mapMaybe toField ws
 
-         pure $ W node $
+         pure $ W ns $
               formStream (map snd ws) missAll
            |> mapOutput bsequence
            |> P.observe logFormRes
 
 parameters {auto loc   : DOMLocal}
            {0 ts       : List Type}
-           (formNode   : List HTMLNode -> HTMLNode)
            {auto els   : All (`Elem` ts) ts}
 
   0 HForm : Type
@@ -132,8 +131,6 @@ parameters {auto loc   : DOMLocal}
   |||
   ||| @ `rec`      : the barbie record type used to group the
   |||                field values.
-  ||| @ `formNode` : used to group and display the different
-  |||                form fields in a single HTML node.
   |||
   ||| Note: For uneditable record fields that should not appear in the
   |||       user interface, use a `dummy` editor.
@@ -150,7 +147,7 @@ parameters {auto loc   : DOMLocal}
          let ws   := hfoldMap (Prelude.Lin:<) recw <>> []
 
          -- group the editing fields in a single HTML node
-             node := formNode (map node ws)
+             ns   := ws >>= nodes
 
-         pure $ W node $
+         pure $ W ns $
            formStream ws miss |> mapOutput hsequence |> P.observe logFormRes

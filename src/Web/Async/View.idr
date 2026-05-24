@@ -250,6 +250,15 @@ parameters {auto has : Has JSErr es}
   replace : Ref t -> HTMLNode -> JS es ()
   replace = setupNode (\el => replace (up el))
 
+  ||| Removes all siblings between the given nodes and
+  ||| appends the new nodes after `ri`.
+  ||| replaces the given element.
+  export
+  replaceBetween : (ri : Ref t) -> (rj : Ref u) -> HTMLNodes -> JS es ()
+  replaceBetween ri rj ns = Prelude.do
+    ej <- castElementByRef {t = Element} rj
+    setupNodes (\el,n => removeTill (up el) (up ej) >> after (up el) n) ri ns
+
   ||| Removes the given element from the DOM.
   export
   remove : Ref t -> JS es ()

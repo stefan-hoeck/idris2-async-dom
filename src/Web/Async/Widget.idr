@@ -3,6 +3,8 @@ module Web.Async.Widget
 import Data.Linear.Unique
 import Data.List1
 import Data.String
+import Text.CSS.Declaration
+import Text.CSS.Property
 import Text.HTML
 import Text.HTML.DomID
 import Text.HTML.Select
@@ -30,22 +32,23 @@ disabledEdit r = disabled r . not . isValid
 
 endStream : DOMLocal => JSStream () -> JSStream t -> JSStream t
 endStream end es =
-  finally logEnded $ haltOn (P.observe' logRemove end) es
+  finally logEnded $ haltOn (P.observe' logAbort end) es
 
 ||| Adjusts a widget in such a way that its input streams ends
-||| as soon as its node is removed from the DOM.
+||| as soon as one of its nodes are removed from the DOM.
 |||
 ||| This is used in utilities such as `bindEd` or `Web.Async.List`, where
 ||| external events decide when a node is removed from the UI.
 export
 endOnRemove : DOMLocal => Widget t -> JS es (Widget t)
-endOnRemove (W (El t as ns) es) = Prelude.do
+endOnRemove (W ns es) = Prelude.do
   E end <- event ()
-  pure $ W (El t (onRemove () :: as) ns) (endStream end es)
-endOnRemove (W (EEl t as) es) = Prelude.do
-  E end <- event ()
-  pure $ W (EEl t $ onRemove () :: as) (endStream end es)
-endOnRemove w = pure w
+  pure $ W (map adj ns) (endStream end es)
+  where
+    adj : Sink () => HTMLNode -> HTMLNode
+    adj (El  t as ns) = El  t (onRemove () :: as) ns
+    adj (EEl t as)    = EEl t (onRemove () :: as)
+    adj n             = n
 
 --------------------------------------------------------------------------------
 -- Text Widgets
@@ -97,7 +100,7 @@ parameters {auto loc : DOMLocal}
     E es   <- eventFrom v
     (i,as) <- attributesWithID Tag.Input attrs
     let es' := observe logInput es
-    pure (i, W (input $ [value v, type tpe, onInput Prelude.id] ++ as) es')
+    pure (i, W [input $ [value v, type tpe, onInput Prelude.id] ++ as] es')
 
   ||| An input element that emits `String` events.
   export
@@ -133,8 +136,10 @@ Interpolation FileEv where interpolate = name
 export
 fileIn : DOMLocal => Attributes Tag.Input -> JS es (Widget $ EditRes FileEv)
 fileIn as = do
-  E es <- eventFrom Missing
-  pure $ W (input $ [type File, onFileIn Valid]++as) (observe (logRes fileStr) es)
+  E es   <- eventFrom Missing
+  pure $
+    W [input $ [type File, onFileIn Valid] ++ as]
+      (observe (logRes fileStr) es)
 
 --------------------------------------------------------------------------------
 -- Select Widgets
@@ -180,7 +185,7 @@ parameters {auto lc : DOMLocal}
     E ws @{s} <- eventFrom (initEv 0 ((ini ==) . Just) vs)
     let ms := cmap Just s
     let ws' := observe logSelect ws |> P.mapOutput selToRes
-    pure $ W (selectEntries vs ((ini ==) . Just) id as) ws'
+    pure $ W [selectEntries vs ((ini ==) . Just) id as] ws'
 
   ||| A select element displaying the values of type `v`
   ||| shown in the given list.
@@ -217,30 +222,46 @@ selEdit :
   -> Editor t
 selEdit vs = E . sel id interpolate vs
 
+--------------------------------------------------------------------------------
+-- Bound Editor
+--------------------------------------------------------------------------------
+
+0 StopRef : Type
+StopRef = IORef (Maybe $ Event JS [JSErr] ())
+
+%inline
+stopref : Act StopRef
+stopref = newref Nothing
+
+%inline
+stopStream : DOMLocal => StopRef -> Act (Event JS [JSErr] ())
+stopStream ref = Prelude.do
+  m <- readref ref
+  for_ m $ \(E {}) => sink () >> logSwitchStopped
+  ev  <- event ()
+  writeref ref (Just ev)
+  pure ev
+
+hiddenDiv : DomID -> HTMLNode
+hiddenDiv i = div [style [display None], ref i] []
+
 export
-bindEd :
-     {auto loc : DOMLocal}
-  -> (cls  : Class)
-  -> (wrap : (fst,snd : HTMLNode) -> HTMLNode)
-  -> (a -> Editor b)
-  -> (Maybe b -> a)
-  -> Editor a
-  -> Editor b
-bindEd cls wrap f fromB (E w) =
+bindEd : DOMLocal => (a -> Editor b) -> (Maybe b -> Maybe a) -> Editor a -> Editor b
+bindEd f fromB (E w) =
   E $ \mb => Prelude.do
     i       <- uniqueID
-    W na as <- w (Just $ fromB mb)
-    W nb bs <- widget (f $ fromB mb) mb >>= wdgt i
-    pure $ W (wrap na nb) $
-      switchMap id $ cons bs $
-        P.tail as |> P.mapMaybe toMaybe |> P.evalMap (adj i)
+    j       <- uniqueID
+    ref     <- stopref
+    W na as <- w (fromB mb)
+    pure $ W (na ++ [hiddenDiv i, hiddenDiv j]) $
+      switchMap id $ P.mapMaybe toMaybe as |> P.evalMap (adj i j ref)
 
   where
-    wdgt : {0 t : _} -> DomID -> Widget t -> Act (Widget t)
-    wdgt i = endOnRemove . adjNode (\n => div [ref i, class cls] [n])
-
-    adj : DomID -> a -> Act (JSStream (EditRes b))
-    adj i va  = Prelude.do
-      W nb xs  <- widget (f va) Nothing >>= wdgt i
-      replace (elemRef i) nb
-      pure xs
+    adj : (i,j : DomID) -> StopRef -> a -> Act (JSStream (EditRes b))
+    adj i j ref va  = Prelude.do
+      logSwitch
+      E es <- stopStream ref
+      W nb xs  <- widget (f va) Nothing
+      replaceBetween (elemRef i) (elemRef j) nb
+      logReplaced
+      pure (endStream es xs)
