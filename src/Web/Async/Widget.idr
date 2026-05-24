@@ -234,14 +234,9 @@ stopref : Act StopRef
 stopref = newref Nothing
 
 %inline
-dostop : DOMLocal => Maybe (Event JS [JSErr] ()) -> Act ()
-dostop Nothing       = pure ()
-dostop (Just $ E es) = sink () >> logSwitchStopped
-
-%inline
 stopStream : DOMLocal => StopRef -> Act (Event JS [JSErr] ())
 stopStream ref = Prelude.do
-  mev <- readref ref
+  readref ref >>= traverse_ (\(E {}) => sink () >> logSwitchStopped)
   ev  <- event ()
   writeref ref (Just ev)
   pure ev
