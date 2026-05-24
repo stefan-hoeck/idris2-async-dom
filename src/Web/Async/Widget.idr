@@ -238,6 +238,6 @@ bindEd f fromB (E w) =
   where
     adj : (i,j : DomID) -> a -> Act (JSStream (EditRes b))
     adj i j va  = Prelude.do
-      W nb xs  <- widget (f va) Nothing >>= endOnRemove
+      W nb xs  <- widget (f va) Nothing
       replaceBetween (elemRef i) (elemRef j) nb
-      pure xs
+      pure (finally logEnded xs)
