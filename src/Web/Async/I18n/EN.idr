@@ -27,18 +27,19 @@ parameters {auto log : Logger JS}
     logRes nm (Invalid x) = debug "invalid \{nm}: \{x}"
     logRes nm (Valid x)   = debug "valid \{nm}: \{x}"
 
-    logEnded  = debug "stream ended"
-    logRemove = debug "element removed"
-
-    logFormField = logRes' . interpolate
-
-    logFormRes = logRes' "form data"
-
-    logFormFieldN e r = logRes' "field \{show e}" r
 
     logSelect Nothing           = debug "no value selected"
     logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: \{show n})"
 
     ldebug s              = debug s
     ltrace s              = trace s
-    logInput s            = debug $ "text input: '\{s}'"
+
+    logEnded          = debug "stream ended"
+    logFormField      = logRes' . interpolate
+    logFormFieldN e r = logRes' "field \{show e}" r
+    logFormRes        = logRes' "form data"
+    logInput s        = debug $ "text input: '\{s}'"
+    logRemove         = debug "element removed"
+    logReplaced       = debug "replaced bound editor"
+    logSwitch         = debug "switching bound editor"
+    logSwitchStopped  = debug "stopped bound editor"

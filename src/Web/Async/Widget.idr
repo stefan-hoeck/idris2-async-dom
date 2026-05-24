@@ -222,6 +222,30 @@ selEdit :
   -> Editor t
 selEdit vs = E . sel id interpolate vs
 
+--------------------------------------------------------------------------------
+-- Bound Editor
+--------------------------------------------------------------------------------
+
+0 StopRef : Type
+StopRef = IORef (Maybe $ Event JS [JSErr] ())
+
+%inline
+stopref : Act StopRef
+stopref = newref Nothing
+
+%inline
+dostop : DOMLocal => Maybe (Event JS [JSErr] ()) -> Act ()
+dostop Nothing       = pure ()
+dostop (Just $ E es) = sink () >> logSwitchStopped
+
+%inline
+stopStream : DOMLocal => StopRef -> Act (Event JS [JSErr] ())
+stopStream ref = Prelude.do
+  mev <- readref ref
+  ev  <- event ()
+  writeref ref (Just ev)
+  pure ev
+
 hiddenDiv : DomID -> HTMLNode
 hiddenDiv i = div [style [display None], ref i] []
 
@@ -231,13 +255,17 @@ bindEd f fromB (E w) =
   E $ \mb => Prelude.do
     i       <- uniqueID
     j       <- uniqueID
+    ref     <- stopref
     W na as <- w (fromB mb)
     pure $ W (na ++ [hiddenDiv i, hiddenDiv j]) $
-      switchMap id $ P.mapMaybe toMaybe as |> P.evalMap (adj i j)
+      switchMap id $ P.mapMaybe toMaybe as |> P.evalMap (adj i j ref)
 
   where
-    adj : (i,j : DomID) -> a -> Act (JSStream (EditRes b))
-    adj i j va  = Prelude.do
+    adj : (i,j : DomID) -> StopRef -> a -> Act (JSStream (EditRes b))
+    adj i j ref va  = Prelude.do
+      logSwitch
+      E es <- stopStream ref
       W nb xs  <- widget (f va) Nothing
       replaceBetween (elemRef i) (elemRef j) nb
-      pure (finally logEnded xs)
+      logReplaced
+      pure (endStream es xs)
