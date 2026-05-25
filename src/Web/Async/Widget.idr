@@ -254,14 +254,22 @@ bindEd f fromB (E w) =
     ref     <- stopref
     W na as <- w (fromB mb)
     pure $ W (na ++ [hiddenDiv i, hiddenDiv j]) $
-      switchMap id $ P.mapMaybe toMaybe as |> P.evalMap (adj i j ref)
+      switchMap id $
+           P.mapMaybe toMaybe as
+        |> P.zipWithIndex
+        |> P.evalMap (adj i j ref mb)
 
   where
-    adj : (i,j : DomID) -> StopRef -> a -> Act (JSStream (EditRes b))
-    adj i j ref va  = Prelude.do
+    adj :
+         (i,j : DomID)
+      -> StopRef
+      -> Maybe b
+      -> (a,Nat)
+      -> Act (JSStream (EditRes b))
+    adj i j ref mb (va,n)  = Prelude.do
       logSwitch
       E es <- stopStream ref
-      W nb xs  <- widget (f va) Nothing
+      W nb xs  <- widget (f va) (if n == 0 then mb else Nothing)
       replaceBetween (elemRef i) (elemRef j) nb
       logReplaced
       pure (endStream es xs)
