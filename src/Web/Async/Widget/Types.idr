@@ -60,6 +60,15 @@ Monad EditRes where
   Invalid x >>= _ = Invalid x
   Valid x   >>= f = f x
 
+validityTag : EditRes s -> String
+validityTag Missing     = "missing"
+validityTag (Invalid _) = "invalid"
+validityTag (Valid _)   = "valid"
+
+export %inline
+validity : EditRes s -> Attribute t
+validity = Str "data-validity" . validityTag
+
 --------------------------------------------------------------------------------
 -- Widgets
 --------------------------------------------------------------------------------
