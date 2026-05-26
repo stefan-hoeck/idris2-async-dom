@@ -3,6 +3,7 @@ module Web.Async.Widget
 import Data.Linear.Unique
 import Data.List1
 import Data.String
+import HTTP.API.Decode
 import Text.CSS.Declaration
 import Text.CSS.Property
 import Text.HTML
@@ -122,6 +123,15 @@ parameters {auto loc : DOMLocal}
   valIn v f = do
     (r, W n evs) <- textInP v
     pure $ W n (observe (validateRes r) (mapOutput f evs))
+
+export
+read : DOMLocal => Decode t => String -> EditRes t
+read s =
+  case Decode.decode (fromString s) of
+    Left x  => case s of
+      "" => Missing
+      s  => Invalid "\{x}"
+    Right x => Valid x
 
 fakeBody : String -> String
 fakeBody s =
