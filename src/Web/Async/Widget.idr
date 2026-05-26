@@ -91,6 +91,12 @@ nodeWithID (Raw _)    = pure Nothing
 nodeWithID (Text _)   = pure Nothing
 nodeWithID Empty      = pure Nothing
 
+||| Sets or unsets a custom validity message at the given node plus
+||| sets a custom attribute (`data-validity`).
+export
+validateRes : DOMLocal => Ref t -> (0 p : ValidityTag t) => EditRes s -> Act ()
+validateRes r v = validityMessage r (editRes v) >> attr r (validity v)
+
 parameters {auto loc : DOMLocal}
            (tpe      : InputType)
            (attrs    : List (Attribute Tag.Input))
@@ -115,7 +121,7 @@ parameters {auto loc : DOMLocal}
   valIn : String -> (String -> EditRes e) -> JS es (Widget $ EditRes e)
   valIn v f = do
     (r, W n evs) <- textInP v
-    pure $ W n (observe (validate r . toEither) (mapOutput f evs))
+    pure $ W n (observe (validateRes r) (mapOutput f evs))
 
 fakeBody : String -> String
 fakeBody s =
