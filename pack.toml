@@ -3,6 +3,11 @@ type   = "local"
 path   = "."
 ipkg   = "async-dom.ipkg"
 
+[custom.all.async-dom-extra]
+type   = "local"
+path   = "extra"
+ipkg   = "async-dom-extra.ipkg"
+
 [custom.all.async-dom-docs]
 type   = "local"
 path   = "docs"

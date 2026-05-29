@@ -1,0 +1,14 @@
+package async-dom-extra
+version    = 0.0.1
+authors    = "stefan-hoeck"
+brief      = "Opinionated utilities for writing web apps with async-dom"
+
+depends    = base      >= 0.8.0
+           , async-dom
+
+modules    = Web.Async.Extra.Class
+           , Web.Async.Extra.Widget
+           , Web.Async.Extra.I18n
+           , Web.Async.Extra.I18n.EN
+
+sourcedir  = "src"
