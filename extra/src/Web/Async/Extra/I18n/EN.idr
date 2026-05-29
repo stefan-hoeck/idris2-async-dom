@@ -6,6 +6,6 @@ import public Web.Async.Extra.I18n
 %default total
 
 export
-ExtraLocal where
+[ExtraEN] ExtraLocal where
   clearTxt = "Clear"
   logTxt   = "Log"

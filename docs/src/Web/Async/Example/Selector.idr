@@ -39,7 +39,7 @@ content ini =
       , div [Id exampleDiv] []
       ]
 
-prog : App -> JSStream Void
+prog : HTTPLocal => App -> JSStream Void
 prog Reset = Reset.run
 prog Perf  = Performance.run
 prog Balls = Balls.run
@@ -53,4 +53,4 @@ ui =
     style appStyle rules
     E app <- eventFrom Reset
     child contentDiv (content Reset)
-    pullErr $ app |> switchMap prog
+    pullErr $ app |> switchMap (prog @{HTTPEN})

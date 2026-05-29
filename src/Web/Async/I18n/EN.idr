@@ -17,7 +17,7 @@ parameters {auto log : Logger JS}
   logRes' nm (Valid x)   = debug "valid \{nm}"
 
   export
-  DOMLocal where
+  [DOMEN] DOMLocal using JSEN where
     editRes Missing       = "mandatory field"
     editRes (Invalid err) = err
     editRes (Valid val)   = ""
