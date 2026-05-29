@@ -5,7 +5,7 @@ import public Web.Async.I18n
 %default total
 
 public export
-interface DOMLocal => ExtraLocal where
+interface ExtraLocal where
   clearTxt              : String
   logTxt                : String
 
