@@ -29,6 +29,11 @@ export %inline
 spacer : Class
 spacer = "async-dom-spacer"
 
+||| A UI widget that should be styled similar to a regular button.
+export %inline
+btn : Class
+btn = "async-dom-button"
+
 ||| A button with a background image
 export %inline
 icon : Class
