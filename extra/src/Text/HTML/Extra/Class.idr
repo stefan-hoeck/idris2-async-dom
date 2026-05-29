@@ -1,4 +1,4 @@
-module Web.Async.Extra.Class
+module Text.HTML.Extra.Class
 
 import public Text.CSS.Class
 

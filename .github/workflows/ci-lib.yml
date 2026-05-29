@@ -31,3 +31,5 @@ jobs:
         run: pack install async-dom
       - name: Build docs
         run: pack build async-dom-docs
+      - name: Build extra
+        run: pack build async-dom-extra
