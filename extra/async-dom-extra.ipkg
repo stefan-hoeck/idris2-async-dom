@@ -7,7 +7,12 @@ depends    = base      >= 0.8.0
            , async-dom
 
 modules    = Text.CSS.Tailwind
+
+           , Text.HTML.Extra
+           , Text.HTML.Extra.Attribute
            , Text.HTML.Extra.Class
+           , Text.HTML.Extra.Node
+
            , Web.Async.Extra.Widget
            , Web.Async.Extra.I18n
            , Web.Async.Extra.I18n.EN

@@ -1,8 +1,23 @@
 module Text.HTML.Extra.Class
 
+import IO.Async.Logging
 import public Text.CSS.Class
 
 %default total
+
+export
+level : LogLevel -> Class
+level l = C "cyby-loglvl-\{l}"
+
+||| A class for the async logging element
+export %inline
+asyncLog : Class
+asyncLog = "async-log"
+
+||| A class for hidden elements (CSS: `display: None`)
+export %inline
+hidden : Class
+hidden = "async-dom-hidden"
 
 ||| A class for widget separators
 export %inline
