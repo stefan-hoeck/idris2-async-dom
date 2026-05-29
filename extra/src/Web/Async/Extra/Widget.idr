@@ -60,7 +60,7 @@ onev Clear   = handle [printErr] $ children (elemRef AsyncLog) []
 onev (Lvl x) = writeref ref x
 
 export
-logger : ExtraLocal => LogLevel -> Act Logger
+logger : HTTPLocal => ExtraLocal => LogLevel -> Act Logger
 logger l = Prelude.do
   ref  <- newref l
   E es <- event LogEv
