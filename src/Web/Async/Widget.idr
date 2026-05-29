@@ -258,8 +258,9 @@ stopStream ref = Prelude.do
   writeref ref (Just ev)
   pure ev
 
-hiddenDiv : DomID -> HTMLNode
-hiddenDiv i = div [style [display None], ref i] []
+export
+hiddenDiv : Ref Tag.Div -> HTMLNode
+hiddenDiv i = div [style [display None], Id i] []
 
 export
 bindEd : DOMLocal => (a -> Editor b) -> (Maybe b -> Maybe a) -> Editor a -> Editor b
@@ -269,7 +270,7 @@ bindEd f fromB (E w) =
     j       <- uniqueID
     ref     <- stopref
     W na as <- w (fromB mb)
-    pure $ W (na ++ [hiddenDiv i, hiddenDiv j]) $
+    pure $ W (na ++ [hiddenDiv $ divRef i, hiddenDiv $ divRef j]) $
       switchMap id $
            P.mapMaybe toMaybe as
         |> P.zipWithIndex
