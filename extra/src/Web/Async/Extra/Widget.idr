@@ -3,6 +3,7 @@ module Web.Async.Extra.Widget
 import Data.List
 import HTTP.API.Decode
 import Text.HTML.Extra
+import public Web.Async.Extra.I18n
 import public Web.Async
 
 %default total
@@ -17,16 +18,16 @@ printErr : JSErr -> JS [] ()
 printErr x = putStrLn "Error: \{dispErr x}"
 
 export
-logNode : LogLevel -> List String -> HTMLNode
+logNode : HTTPLocal => LogLevel -> List String -> HTMLNode
 logNode l msgs =
   li []
-    [ label [class $ level l] [Text $ "[\{l}]"]
+    [ label [class $ level l] [Text $ "[\{logLevel l}]"]
     , div [] $ intersperse (br []) (map Text msgs)
     ]
 
 export
-uilog : IORef LogLevel => Logger JS
-uilog @{ref} =
+uilog : HTTPLocal => (ref : IORef LogLevel) => Logger JS
+uilog =
   MkLogger $ \l,ml => Prelude.do
     x <- readref ref
     when (l >= x) $ handle [printErr] (prepend (elemRef AsyncLog) $ logNode l ml)
@@ -34,14 +35,14 @@ uilog @{ref} =
 levels : List LogLevel
 levels = [Trace,Debug,Info,Warn,Error,Fatal]
 
-appLog : Sink LogEv => HTMLNode
+appLog : Sink LogEv => ExtraLocal => HTMLNode
 appLog =
   section
     [ class asyncLog ]
     [ header []
-        [ label [] [Text "Log"]
+        [ label [] [Text logTxt]
         , spacer
-        , button [onClick Clear] ["Clear"]
+        , button [onClick Clear] [Text clearTxt]
         , selectFromList' levels (Just Info) show Lvl []
         ]
     , ul [ref AsyncLog] []
@@ -59,7 +60,7 @@ onev Clear   = handle [printErr] $ children (elemRef AsyncLog) []
 onev (Lvl x) = writeref ref x
 
 export
-logger : LogLevel -> Act Logger
+logger : ExtraLocal => LogLevel -> Act Logger
 logger l = Prelude.do
   ref  <- newref l
   E es <- event LogEv
