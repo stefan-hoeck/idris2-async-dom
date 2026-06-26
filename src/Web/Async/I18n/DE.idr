@@ -34,12 +34,12 @@ parameters {auto log : Logger JS}
     ldebug s              = debug s
     ltrace s              = trace s
 
-    logAbort          = debug "Der Datenstrom wurde über den Kill-Switch abgebrochen."
+    logAbort          = debug "Der Datenstrom wurde über den Kill-Switch abgebrochen"
     logEnded          = debug "Der Datenstrom endete"
     logFormField      = logRes' . interpolate
-    logFormFieldN e r = logRes' "field \{show e}" r
-    logFormRes        = logRes' "form data"
-    logInput s        = debug $ "text input: '\{s}'"
-    logReplaced       = debug "replaced bound editor"
-    logSwitch         = debug "switching bound editor"
-    logSwitchStopped  = debug "stopped bound editor"
+    logFormFieldN e r = logRes' "Feld \{show e}" r
+    logFormRes        = logRes' "Formulardaten"
+    logInput s        = debug $ "Texteingabe: '\{s}'"
+    logReplaced       = debug "Zugeordneten Editor ersetzt"
+    logSwitch         = debug "Zugeordneten Editor wechseln"
+    logSwitchStopped  = debug "Zugeordneten Editor stoppen"
