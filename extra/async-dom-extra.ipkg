@@ -16,5 +16,6 @@ modules    = Text.CSS.Tailwind
            , Web.Async.Extra.Widget
            , Web.Async.Extra.I18n
            , Web.Async.Extra.I18n.EN
+           , Web.Async.Extra.I18n.DE
 
 sourcedir  = "src"
