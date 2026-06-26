@@ -1,6 +1,6 @@
 module Web.Async.I18n.DE
 
-import HTTP.API.Client.I18n.EN
+import HTTP.API.Client.I18n.DE
 import IO.Async.JS
 import IO.Async.Logging
 import Text.HTML.Select
@@ -17,7 +17,7 @@ parameters {auto log : Logger JS}
   logRes' nm (Valid x)   = debug "valid \{nm}"
 
   export
-  [DOMEN] DOMLocal using JSEN where
+  [DOMDE] DOMLocal using JSDE where
     editRes Missing       = "mandatory field"
     editRes (Invalid err) = err
     editRes (Valid val)   = ""
