@@ -12,30 +12,30 @@ import public Web.Async.I18n
 parameters {auto log : Logger JS}
 
   logRes' : String -> EditRes x -> Async JS es ()
-  logRes' nm Missing     = debug "missing \{nm}"
-  logRes' nm (Invalid x) = debug "invalid \{nm}: \{x}"
-  logRes' nm (Valid x)   = debug "valid \{nm}"
+  logRes' nm Missing     = debug "Fehlend \{nm}"
+  logRes' nm (Invalid x) = debug "Ungültig \{nm}: \{x}"
+  logRes' nm (Valid x)   = debug "Gültig \{nm}"
 
   export
   [DOMDE] DOMLocal using JSDE where
-    editRes Missing       = "mandatory field"
+    editRes Missing       = "Pflichtfeld"
     editRes (Invalid err) = err
     editRes (Valid val)   = ""
-    fileStr               = "file"
+    fileStr               = "Datei"
 
-    logRes nm Missing     = debug "missing \{nm}"
-    logRes nm (Invalid x) = debug "invalid \{nm}: \{x}"
-    logRes nm (Valid x)   = debug "valid \{nm}: \{x}"
+    logRes nm Missing     = debug "Fehlend \{nm}"
+    logRes nm (Invalid x) = debug "Ungültig \{nm}: \{x}"
+    logRes nm (Valid x)   = debug "Gültig \{nm}: \{x}"
 
 
-    logSelect Nothing           = debug "no value selected"
-    logSelect (Just $ SE n s _) = debug "value selected: '\{s}' (index: \{show n})"
+    logSelect Nothing           = debug "Kein Wert ausgewählt"
+    logSelect (Just $ SE n s _) = debug "Ausgewählter Wert: '\{s}' (Index: \{show n})"
 
     ldebug s              = debug s
     ltrace s              = trace s
 
-    logAbort          = debug "aborting stream via kill switch"
-    logEnded          = debug "stream ended"
+    logAbort          = debug "Der Datenstrom wurde über den Kill-Switch abgebrochen."
+    logEnded          = debug "Der Datenstrom endete"
     logFormField      = logRes' . interpolate
     logFormFieldN e r = logRes' "field \{show e}" r
     logFormRes        = logRes' "form data"
