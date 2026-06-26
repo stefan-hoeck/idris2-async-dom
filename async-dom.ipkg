@@ -26,6 +26,7 @@ modules    = Text.CSS.Extra
            , Web.Async.Form
            , Web.Async.I18n
            , Web.Async.I18n.EN
+           , Web.Async.I18n.DE
            , Web.Async.List
            , Web.Async.Util
            , Web.Async.View
